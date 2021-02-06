@@ -2,7 +2,6 @@ const fs = require("fs")
 const path = require("path")
 
 // https://esbuild.github.io/plugins/#svelte-plugin
-// https://esbuild.github.io/plugins/#svelte-plugin
 let sveltePlugin = (options = {}) => ({
 	name: "svelte",
 	setup(build) {
@@ -68,15 +67,12 @@ async function generate_html(src) {
 		],
 		sourcemap: false, // No need; this is an intermediary build step
 	})
-	// .catch(() => process.exit(1))
-
 	if (result.errors && result.errors.length > 0) {
 		console.error(result.errors)
 	}
 	if (result.warnings && result.warnings.length > 0) {
 		console.warn(result.warnings)
 	}
-
 	const Component = require(`./__cache__/${name(src)}.esbuild.js`).default
 	return Component.render().html
 }
@@ -110,8 +106,6 @@ async function write_app_js() {
 		],
 		sourcemap: true,
 	})
-	// .catch(() => process.exit(1))
-
 	if (result.errors && result.errors.length > 0) {
 		console.error(result.errors)
 	}
