@@ -11,9 +11,11 @@ unsolved problems
 - serve command
 - watch command - we basically know how to do this in theory and since svelte is a compiler, error messaging should be
   even easier
+- router (App5)
+- page props (defer 0.2) (supportable with context="module")
+- dynamic routes (defer 0.2) (supportable with context="module")
+- layout components -- instead of wrapping routes children wrap routes; this can also work for nested layout componetns
 
-* layout components -- need to figure out how dom diffing works in svelte
+* layout reset? (so we use an array that recursively renders itself, where resets is basically an override)
+* do we want to support csr routes? definitely not for 0.1
 * markdown?
-* dynamic routes (should be able to support with an explicitly named export / caching async responses)
-* page props (should be able to support with an explicitly named export / caching async responses)
-* router (to start we don’t need to have page linking but the user is still paying for unused bytes)
