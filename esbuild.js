@@ -11,8 +11,7 @@ function name(src) {
 	return path.basename(src).slice(0, -path.extname(src).length)
 }
 
-// generate_html generates HTML from a src path. This is an intermediary step
-// for write_page_html.
+// generate_html generates HTML from a src path.
 async function generate_html(src) {
 	const result = await esbuild.build({
 		bundle: true,
@@ -23,7 +22,7 @@ async function generate_html(src) {
 		entryPoints: [src],
 		format: "cjs", // Must use "cjs" here
 		minify: false, // No need; this is an intermediary build step
-		outfile: `__cache__/${name(src)}.esbuild.js`,
+		outfile: `__cache__/pages/${name(src)}.esbuild.js`,
 		plugins: [
 			sveltePlugin({
 				generate: "ssr",
@@ -37,7 +36,7 @@ async function generate_html(src) {
 	if (result.warnings && result.warnings.length > 0) {
 		console.warn(result.warnings)
 	}
-	const Component = require(`./__cache__/${name(src)}.esbuild.js`).default
+	const Component = require(`./__cache__/pages/${name(src)}.esbuild.js`).default
 	return Component.render()
 }
 
@@ -104,10 +103,21 @@ async function run() {
 
 	await fs.promises.rmdir("public/build", { recursive: true })
 	const list = await fs.promises.readdir("src/pages")
+
+	const chain = []
 	for (const each of list) {
-		await write_page_html(tmpl, path.join("src/pages", each))
+		chain.push(
+			new Promise(async () => {
+				await write_page_html(tmpl, path.join("src/pages", each))
+			}),
+		)
 	}
-	await write_app_js()
+	chain.push(
+		new Promise(async () => {
+			await write_app_js()
+		}),
+	)
+	await Promise.all(chain)
 }
 
 run()
