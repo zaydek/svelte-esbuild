@@ -1,0 +1,20 @@
+{
+	"name": "create-svetlana-app",
+	"version": "0.0.19",
+	"repository": "https://github.com/zaydek/svetlana",
+	"license": "MIT",
+	"bin": {
+		"create-svetlana-app": "bin/create-svetlana-app",
+		"create-sv-app": "bin/create-svetlana-app"
+	},
+	"files": [
+		"bin",
+		"postinstall.js"
+	],
+	"scripts": {
+		"postinstall": "node postinstall.js"
+	},
+	"engines": {
+		"node": ">=14.14.0"
+	}
+}

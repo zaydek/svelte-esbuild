@@ -1,0 +1,14 @@
+{
+	"name": "{{ .AppName }}",
+	"scripts": {
+		"start": "sv start",
+		"build": "sv build",
+		"serve": "sv serve"
+	},
+	"dependencies": {
+		"esbuild": "^0.8.42",
+		"prettier": "^2.2.1",
+		"svelte": "^3.32.1",
+		"svetlana": "^{{ .SvetlanaVersion }}"
+	}
+}

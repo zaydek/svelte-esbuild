@@ -1,0 +1,20 @@
+{
+	"name": "svetlana",
+	"version": "0.0.19",
+	"repository": "https://github.com/zaydek/svetlana",
+	"license": "MIT",
+	"bin": {
+		"svetlana": "bin/svetlana",
+		"sv": "bin/svetlana"
+	},
+	"files": [
+		"bin",
+		"postinstall.js"
+	],
+	"scripts": {
+		"postinstall": "node postinstall.js"
+	},
+	"engines": {
+		"node": ">=14.14.0"
+	}
+}

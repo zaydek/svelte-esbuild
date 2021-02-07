@@ -1,5 +1,2 @@
 .DS_Store
-/node_modules
-
-/__cache__
-/build
+node_modules
