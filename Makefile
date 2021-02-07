@@ -1,4 +1,4 @@
-RETRO_VERSION = $(shell cat version.txt)
+SVETLANA_VERSION = $(shell cat version.txt)
 
 ################################################################################
 
@@ -18,13 +18,13 @@ bin:
 ################################################################################
 
 test-create-svetlana-app:
-	go test ./server/cmd/create_retro_app/...
+	go test ./cmd/create_SVETLANA_app/...
 
 test-svetlana:
-	go test ./server/cmd/svetlana/...
+	go test ./cmd/svetlana/...
 
 test-pkg:
-	go test ./server/pkg/...
+	go test ./pkg/...
 
 test:
 	go test ./...
@@ -51,8 +51,8 @@ build:
 ################################################################################
 
 version:
-	cd npm/create-svetlana-app && npm version "$(RETRO_VERSION)" --allow-same-version
-	cd npm/svetlana && npm version "$(RETRO_VERSION)" --allow-same-version
+	cd npm/create-svetlana-app && npm version "$(SVETLANA_VERSION)" --allow-same-version
+	cd npm/svetlana && npm version "$(SVETLANA_VERSION)" --allow-same-version
 
 ################################################################################
 

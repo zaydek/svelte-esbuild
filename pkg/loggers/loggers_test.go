@@ -4,8 +4,8 @@ import (
 	"os"
 	"testing"
 
-	"github.com/zaydek/svetlana/server/pkg/expect"
-	"github.com/zaydek/svetlana/server/pkg/term"
+	"github.com/zaydek/svetlana/pkg/expect"
+	"github.com/zaydek/svetlana/pkg/term"
 )
 
 func TestTransformers(t *testing.T) {

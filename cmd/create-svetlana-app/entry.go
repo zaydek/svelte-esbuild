@@ -1,4 +1,4 @@
-package create_retro_app
+package create_svetlana_app
 
 import (
 	"fmt"
@@ -6,7 +6,7 @@ import (
 )
 
 func Run() {
-	// Cover []string{"create-retro-app"} case:
+	// Cover []string{"create-svetlana-app"} case:
 	if len(os.Args) == 1 {
 		fmt.Println(usage)
 		os.Exit(0)
@@ -19,7 +19,7 @@ func Run() {
 	case "--version":
 		fallthrough
 	case "-v":
-		fmt.Println(os.Getenv("RETRO_VERSION"))
+		fmt.Println(os.Getenv("SVETLANA_VERSION"))
 		os.Exit(0)
 	case "help":
 		fallthrough
@@ -33,5 +33,5 @@ func Run() {
 	default:
 		cmd = parseArguments(os.Args[1:]...)
 	}
-	cmd.CreateRetroApp()
+	cmd.CreateSvetlanaApp()
 }

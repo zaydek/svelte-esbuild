@@ -4,15 +4,15 @@ import (
 	"bytes"
 	"testing"
 
-	"github.com/zaydek/svetlana/server/pkg/expect"
+	"github.com/zaydek/svetlana/pkg/expect"
 )
 
 const want = `{
 	"name": "app-name",
 	"scripts": {
-		"start": "sv start",
-		"build": "sv build",
-		"serve": "sv serve"
+		"start": "svetlana start",
+		"build": "svetlana build",
+		"serve": "svetlana serve"
 	},
 	"dependencies": {
     "esbuild": "^0.8.42",

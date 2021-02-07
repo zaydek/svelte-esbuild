@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	"github.com/zaydek/svetlana/server/cmd/svetlana"
+	"github.com/zaydek/svetlana/cmd/svetlana"
 )
 
 func init() {

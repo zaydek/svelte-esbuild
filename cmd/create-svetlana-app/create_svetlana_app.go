@@ -1,4 +1,4 @@
-package create_retro_app
+package create_svetlana_app
 
 import (
 	"bytes"
@@ -9,13 +9,23 @@ import (
 	"os"
 	p "path"
 
-	"github.com/zaydek/retro/cmd/create_retro_app/embeds"
-	"github.com/zaydek/retro/pkg/loggers"
-	"github.com/zaydek/retro/pkg/perm"
-	"github.com/zaydek/retro/pkg/term"
+	"github.com/zaydek/svetlana/cmd/create-svetlana-app/embeds"
+	"github.com/zaydek/svetlana/pkg/loggers"
+	"github.com/zaydek/svetlana/pkg/perm"
+	"github.com/zaydek/svetlana/pkg/term"
 )
 
-func (cmd Command) CreateRetroApp() {
+func (cmd Command) CreateSvetlanaApp() {
+	fsys := embeds.JSFS
+	// if cmd.Template == "typescript" {
+	// 	fsys = embeds.TSFS
+	// }
+
+	tmpl := embeds.JSPkgTemplate
+	// if cmd.Template == "typescript" {
+	// 	tmpl = embeds.TSPkgTemplate
+	// }
+
 	if cmd.Directory != "." {
 		if info, err := os.Stat(cmd.Directory); !os.IsNotExist(err) {
 			var typ string
@@ -27,9 +37,9 @@ func (cmd Command) CreateRetroApp() {
 			loggers.ErrorAndEnd(fmt.Sprintf("Aborted. "+
 				"A %s named `%[2]s` already exists. "+
 				"Here’s what you can do:\n\n"+
-				"- create-retro-app %[2]s\n\n"+
+				"- create-svetlana-app %[2]s\n\n"+
 				"Or\n\n"+
-				"- rm -r %[2]s && create-retro-app %[2]s",
+				"- rm -r %[2]s && create-svetlana-app %[2]s",
 				typ, cmd.Directory))
 		}
 		if err := os.MkdirAll(cmd.Directory, perm.Directory); err != nil {
@@ -41,11 +51,6 @@ func (cmd Command) CreateRetroApp() {
 				err.Error())
 		}
 		defer os.Chdir("..")
-	}
-
-	fsys := embeds.JavaScriptFS
-	if cmd.Template == "typescript" {
-		fsys = embeds.TypeScriptFS
 	}
 
 	var paths []string
@@ -115,14 +120,9 @@ func (cmd Command) CreateRetroApp() {
 		appName = p.Base(cwd)
 	}
 
-	tmpl := embeds.JavaScriptPackageTemplate
-	if cmd.Template == "typescript" {
-		tmpl = embeds.TypeScriptPackageTemplate
-	}
-
-	dot := embeds.PackageDot{
-		AppName:      appName,
-		RetroVersion: os.Getenv("RETRO_VERSION"),
+	dot := embeds.PkgDot{
+		AppName:         appName,
+		SvetlanaVersion: os.Getenv("SVETLANA_VERSION"),
 	}
 
 	var buf bytes.Buffer

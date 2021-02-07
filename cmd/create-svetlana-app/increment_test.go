@@ -1,9 +1,9 @@
-package create_retro_app
+package create_svetlana_app
 
 import (
 	"testing"
 
-	"github.com/zaydek/retro/pkg/expect"
+	"github.com/zaydek/svetlana/pkg/expect"
 )
 
 func TestIncrement(t *testing.T) {

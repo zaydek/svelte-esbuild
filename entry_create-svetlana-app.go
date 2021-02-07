@@ -5,7 +5,7 @@ import (
 	"os"
 	"strings"
 
-	create_svetlana_app "github.com/zaydek/svetlana/server/create-svetlana-app"
+	create_svetlana_app "github.com/zaydek/svetlana/cmd/create-svetlana-app"
 )
 
 func init() {

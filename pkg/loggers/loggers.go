@@ -7,7 +7,7 @@ import (
 	"strings"
 	"sync"
 
-	"github.com/zaydek/svetlana/server/pkg/term"
+	"github.com/zaydek/svetlana/pkg/term"
 )
 
 var mu sync.Mutex
