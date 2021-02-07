@@ -1,5 +1,20 @@
 const fs = require("fs")
 const path = require("path")
+const prettier = require("prettier")
+
+// https://michelelarson.com/prettier-config
+const prettierrc = {
+	printWidth: 9999,
+	tabWidth: 2,
+	useTabs: true,
+	semi: false,
+	singleQuote: false,
+	trailingComma: "all",
+	bracketSpacing: true,
+	jsxBracketSameLine: false,
+	arrowParens: "avoid",
+	proseWrap: "always",
+}
 
 // https://esbuild.github.io/plugins/#svelte-plugin
 let sveltePlugin = (options = {}) => ({
@@ -26,6 +41,7 @@ let sveltePlugin = (options = {}) => ({
 				return { text: message, location }
 			}
 
+			// See https://github.com/sveltejs/svelte/issues/189.
 			const source = await fs.promises.readFile(args.path, "utf8")
 			const filename = path.relative(process.cwd(), args.path)
 
@@ -74,17 +90,40 @@ async function generate_html(src) {
 		console.warn(result.warnings)
 	}
 	const Component = require(`./__cache__/${name(src)}.esbuild.js`).default
-	return Component.render().html
+	return Component.render()
 }
+
+// // prettier-ignore
+// function clean(str) {
+// 	return str
+// 		.replace(/></g, ">\n\t\t<")
+// 		.replace(/\/>/g, " />")
+// }
 
 // write_page_html writes a page from an HTML template and a src path. Pages are
 // written to public/build/*.html.
 async function write_page_html(tmpl, src) {
-	let html = ""
-	html += `<div id="root">${await generate_html(src)}</div>`
-	html += '\n\t\t<script src="/app.js"></script>'
+	const rendered = await generate_html(src)
+
+	// prettier-ignore
+	let html = tmpl
+		.replace("%head%", rendered.head)
+		.replace("%page%", `
+			<div id="root">
+				${rendered.html}
+			</div>
+			<script src="/app.js"></script>
+		`)
+
+	// TODO: Add guard here.
+	// TODO: This may or may not work for <pre> use cases.
+	html = prettier.format(html, {
+		...prettierrc,
+		parser: "html",
+	})
+
 	await fs.promises.mkdir("public/build", { recursive: true })
-	await fs.promises.writeFile(`public/build/${name(src)}.html`, tmpl.replace("%page%", html))
+	await fs.promises.writeFile(`public/build/${name(src)}.html`, html)
 }
 
 // write_app_js writes public/build/app.js.
@@ -116,7 +155,12 @@ async function write_app_js() {
 
 async function run() {
 	const tmpl = (await fs.promises.readFile("public/index.html")).toString()
-	await write_page_html(tmpl, "src/pages/hello-world.svelte")
+
+	await fs.promises.rmdir("public/build", { recursive: true })
+	const list = await fs.promises.readdir("src/pages")
+	for (const each of list) {
+		await write_page_html(tmpl, path.join("src/pages", each))
+	}
 	await write_app_js()
 }
 
