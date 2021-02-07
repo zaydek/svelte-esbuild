@@ -4,8 +4,8 @@ const path = require("path")
 const prettier = require("prettier")
 const util = require("util")
 
-const prettierrc = require("./prettierrc.js")
-const sveltePlugin = require("./svelte-plugin.js")
+const prettierrc = require("./helpers/prettierrc.js")
+const sveltePlugin = require("./helpers/svelte-plugin.js")
 
 const exec = util.promisify(require("child_process").exec)
 
@@ -43,17 +43,17 @@ async function generate_html(src) {
 	return Component.render()
 }
 
+// TODO: If not prettier, use.
+// function clean(head) {
+// 	return head
+// 		.replace(/></g, ">\n\t\t<")
+// 		.replace(/\/>/g, " />")
+// }
+
 // write_page_html writes a page from an HTML template and a src path. Pages are
 // written to build/*.html.
 async function write_page_html(tmpl, src) {
 	const rendered = await generate_html(src)
-
-	// TODO: If not prettier, use.
-	// const clean = str => {
-	// 	return str
-	// 		.replace(/></g, ">\n\t\t<")
-	// 		.replace(/\/>/g, " />")
-	// }
 
 	// prettier-ignore
 	let html = tmpl
