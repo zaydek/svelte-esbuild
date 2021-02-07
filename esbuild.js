@@ -1,10 +1,13 @@
 const esbuild = require("esbuild")
-const fs = require("fs")
+const fs = require("fs/promises")
 const path = require("path")
 const prettier = require("prettier")
+const util = require("util")
 
 const prettierrc = require("./prettierrc.js")
 const sveltePlugin = require("./svelte-plugin.js")
+
+const exec = util.promisify(require("child_process").exec)
 
 // "path/to/name.ext" -> "name"
 function name(src) {
@@ -41,10 +44,11 @@ async function generate_html(src) {
 }
 
 // write_page_html writes a page from an HTML template and a src path. Pages are
-// written to public/build/*.html.
+// written to build/*.html.
 async function write_page_html(tmpl, src) {
 	const rendered = await generate_html(src)
 
+	// TODO: If not prettier, use.
 	// const clean = str => {
 	// 	return str
 	// 		.replace(/></g, ">\n\t\t<")
@@ -55,7 +59,7 @@ async function write_page_html(tmpl, src) {
 	let html = tmpl
 		.replace("%head%", rendered.head)
 		.replace("%page%", `
-			<div id="root">
+			<div id="app">
 				${rendered.html}
 			</div>
 			<script src="/app.js"></script>
@@ -67,12 +71,12 @@ async function write_page_html(tmpl, src) {
 		parser: "html",
 	})
 
-	await fs.promises.mkdir("public/build", { recursive: true })
-	await fs.promises.writeFile(`public/build/${name(src)}.html`, html)
+	await fs.mkdir("build", { recursive: true })
+	await fs.writeFile(`build/${name(src)}.html`, html)
 }
 
-// write_app_js writes public/build/app.js.
-async function write_app_js() {
+// write_svelte_js writes build/app.js.
+async function write_svelte_js() {
 	const result = await esbuild.build({
 		bundle: true,
 		define: {
@@ -81,7 +85,7 @@ async function write_app_js() {
 		},
 		entryPoints: ["src/main.js"],
 		minify: process.env.NODE_ENV === "production",
-		outfile: "public/build/app.js",
+		outfile: "build/app.js",
 		plugins: [
 			sveltePlugin({
 				generate: "dom",
@@ -98,14 +102,19 @@ async function write_app_js() {
 	}
 }
 
-async function run() {
-	const tmpl = (await fs.promises.readFile("public/index.html")).toString()
+async function copyPublicToBuild() {
+	await fs.rmdir("build", { recursive: true })
+	await exec("cp -r public build")
+	await fs.unlink("build/index.html")
+}
 
-	await fs.promises.rmdir("public/build", { recursive: true })
-	const list = await fs.promises.readdir("src/pages")
+async function run() {
+	const tmpl = (await fs.readFile("public/index.html")).toString()
+
+	await copyPublicToBuild()
 
 	const chain = []
-	for (const each of list) {
+	for (const each of await fs.readdir("src/pages")) {
 		chain.push(
 			new Promise(async () => {
 				await write_page_html(tmpl, path.join("src/pages", each))
@@ -114,9 +123,10 @@ async function run() {
 	}
 	chain.push(
 		new Promise(async () => {
-			await write_app_js()
+			await write_svelte_js()
 		}),
 	)
+
 	await Promise.all(chain)
 }
 

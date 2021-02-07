@@ -22,5 +22,5 @@ function App(options) {
 
 export default new App({
 	hydrate: true,
-	target: document.getElementById("root"),
+	target: document.getElementById("app"),
 })
