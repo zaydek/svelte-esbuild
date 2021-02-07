@@ -1,5 +1,5 @@
-// package create_svetlana_app
-//
+package create_svetlana_app
+
 // import (
 // 	"testing"
 //

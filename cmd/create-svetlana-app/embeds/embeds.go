@@ -16,7 +16,7 @@ var jsFS embed.FS
 
 var JSFS, _ = fs.Sub(jsFS, "javascript")
 
-//go:embed package.javascript.json
+//go:embed package.json
 var jsPkg string
 
 var JSPkgTemplate = template.Must(template.New("package.json").Parse(jsPkg))
