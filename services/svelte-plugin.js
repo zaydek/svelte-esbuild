@@ -2,12 +2,12 @@ const fs = require("fs")
 const path = require("path")
 const svelte = require("svelte/compiler")
 
-// https://esbuild.github.io/plugins/#svelte-plugin
+// Based on https://esbuild.github.io/plugins/#svelte-plugin.
 module.exports = (options = {}) => ({
 	name: "svelte",
 	setup(build) {
 		build.onLoad({ filter: /\.svelte$/ }, async args => {
-			const convert_svelte_message_to_esbuild = ({ message, start, end }) => {
+			const convertMessage = ({ message, start, end }) => {
 				let location
 				if (start && end) {
 					const lineText = source.split(/\r\n|\r|\n/g)[start.line - 1]
@@ -32,9 +32,9 @@ module.exports = (options = {}) => ({
 					filename,
 				})
 				let contents = js.code + `//# sourceMappingURL=` + js.map.toUrl()
-				return { contents, warnings: warnings.map(convert_svelte_message_to_esbuild) }
+				return { contents, warnings: warnings.map(convertMessage) }
 			} catch (e) {
-				return { errors: [convert_svelte_message_to_esbuild(e)] }
+				return { errors: [convertMessage(e)] }
 			}
 		})
 	},

@@ -3,19 +3,17 @@ const fs = require("fs/promises")
 const path = require("path")
 const prettier = require("prettier")
 
-const svelte = require("./svelte-plugin.js")
+// TODO: Change to process.cwd?
+const svelte = require("./services/svelte-plugin.js")
+const { no_ext } = require("./services/helpers")
 
 const userSvetlanaConfig = { plugins: [] }
 const userPrettierConfig = {}
 
-function no_ext(src) {
-	return src.slice(0, -path.extname(src).length)
-}
-
-// renderComponentFromPageBasedRoute renders a component from a page-based route.
-async function renderComponentFromPageBasedRoute(runtime, page_based_route) {
-	// TODO: Change to a service-based architecture and or add incremental
-	// recompilation?
+// renderComponent renders a component from a page-based route.
+//
+// TODO: Add support for incremental recompilation.
+async function renderComponent(runtime, page_based_route) {
 	const result = await esbuild.build({
 		bundle: true,
 		define: {
@@ -46,8 +44,8 @@ async function renderComponentFromPageBasedRoute(runtime, page_based_route) {
 	return component.render()
 }
 
-// renderPageFromComponent renders a page from a rendered component.
-async function renderPageFromComponent(runtime, component) {
+// renderPage renders a page from a rendered component.
+async function renderPage(runtime, component) {
 	// prettier-ignore
 	const head = component.head
 		.replace(/></g, ">\n\t\t<")
@@ -83,9 +81,9 @@ async function run(runtime) {
 
 	const chain = []
 	for (const each of runtime.page_based_router) {
-		const p = new Promise(async (resolve, reject) => {
-			const component = await renderComponentFromPageBasedRoute(runtime, each)
-			const page = await renderPageFromComponent(runtime, component)
+		const p = new Promise(async resolve => {
+			const component = await renderComponent(runtime, each)
+			const page = await renderPage(runtime, component)
 			resolve({ ...each, page })
 		})
 		chain.push(p)
