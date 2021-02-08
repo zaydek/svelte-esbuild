@@ -8,12 +8,14 @@ const svelte = require("./svelte-plugin.js")
 const userSvetlanaConfig = { plugins: [] }
 const userPrettierConfig = {}
 
-function name(src) {
-	return path.basename(src).slice(0, -path.extname(src).length)
+function no_ext(src) {
+	return src.slice(0, -path.extname(src).length)
 }
 
 // renderComponentFromPageBasedRoute renders a component from a page-based route.
 async function renderComponentFromPageBasedRoute(runtime, page_based_route) {
+	// TODO: Change to a service-based architecture and or add incremental
+	// recompilation?
 	const result = await esbuild.build({
 		bundle: true,
 		define: {
@@ -22,7 +24,7 @@ async function renderComponentFromPageBasedRoute(runtime, page_based_route) {
 		},
 		entryPoints: [page_based_route.src_path],
 		format: "cjs",
-		outfile: `${runtime.dir_config.cache_dir}/pages/${name(page_based_route.src_path)}.esbuild.js`,
+		outfile: `${runtime.dir_config.cache_dir}/${no_ext(page_based_route.src_path)}.esbuild.js`,
 		plugins: [
 			svelte({
 				generate: "ssr",
@@ -40,8 +42,7 @@ async function renderComponentFromPageBasedRoute(runtime, page_based_route) {
 		)
 		process.kill(1)
 	}
-	const component = require(`./${runtime.dir_config.cache_dir}/pages/${name(page_based_route.src_path)}.esbuild.js`)
-		.default
+	const component = require(`./${runtime.dir_config.cache_dir}/${no_ext(page_based_route.src_path)}.esbuild.js`).default
 	return component.render()
 }
 
@@ -96,23 +97,21 @@ async function run(runtime) {
 		return acc
 	}, {})
 
-	console.log(map)
-
-	// console.log(
-	// 	JSON.stringify({
-	// 		data: map,
-	// 		errors: [],
-	// 		warnings: [],
-	// 	}),
-	// )
+	console.log(
+		JSON.stringify({
+			data: map,
+			errors: [],
+			warnings: [],
+		}),
+	)
 }
 
 run({
 	dir_config: {
-		assetDir: "public",
-		pagesDir: "pages",
-		cacheDir: "__cache__",
-		buildDir: "build",
+		asset_dir: "public",
+		pages_dir: "pages",
+		cache_dir: "__cache__",
+		build_dir: "build",
 	},
 	base_page: `<!DOCTYPE html>
 <html lang="en">
