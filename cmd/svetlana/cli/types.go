@@ -1,16 +1,14 @@
 package cli
 
-// TODO: Add command enum.
-
 type StartCommand struct {
-	Cached    bool
-	Port      int
-	SourceMap bool
+	Cached   bool
+	Prettier bool
+	Port     int
 }
 
 type BuildCommand struct {
-	Cached    bool
-	SourceMap bool
+	Cached   bool
+	Prettier bool
 }
 
 type ServeCommand struct {

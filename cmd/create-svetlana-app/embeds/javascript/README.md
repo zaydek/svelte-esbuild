@@ -1,3 +1,5 @@
+# create-svetlana-app
+
 This project was bootstrapped with `npx create-svetlana-app`.
 
 Learn more about Svetlana: https://github.com/zaydek/svetlana.
@@ -6,24 +8,26 @@ Learn more about Svetlana: https://github.com/zaydek/svetlana.
 
   Usage:
 
-    sv start           Starts the dev server
-    sv build           Builds the production-ready build
-    sv serve           Serves the production-ready build
+    svetlana start     Starts the dev server
+    svetlana build     Builds the production-ready build (SSG)
+    svetlana serve     Serves the production-ready build
 
-  sv start
+  svetlana start
 
     Starts the dev server
 
       --cached         Use cached resources (default false)
+      --prettier       Format HTML (default false)
       --port=<number>  Port number (default 8000)
 
-  sv build
+  svetlana build
 
-    Builds the production-ready build
+    Builds the production-ready build (SSG)
 
       --cached         Use cached resources (default false)
+      --prettier       Format HTML (default false)
 
-  sv serve
+  svetlana serve
 
     Serves the production-ready build
 

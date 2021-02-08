@@ -3,45 +3,45 @@ package cli
 import (
 	"testing"
 
-	"github.com/zaydek/retro/pkg/expect"
+	"github.com/zaydek/svetlana/pkg/expect"
 )
 
-func TestWatch(t *testing.T) {
+func TestStart(t *testing.T) {
 	var cmd StartCommand
 
 	cmd = parseStartArguments()
 	expect.DeepEqual(t, cmd, StartCommand{
-		Cached:    false,
-		Port:      8000,
-		SourceMap: false,
+		Cached:   false,
+		Prettier: false,
+		Port:     8000,
 	})
 
 	cmd = parseStartArguments("--cached")
 	expect.DeepEqual(t, cmd, StartCommand{
-		Cached:    true,
-		Port:      8000,
-		SourceMap: false,
+		Cached:   true,
+		Prettier: false,
+		Port:     8000,
+	})
+
+	cmd = parseStartArguments("--prettier")
+	expect.DeepEqual(t, cmd, StartCommand{
+		Cached:   false,
+		Prettier: true,
+		Port:     8000,
 	})
 
 	cmd = parseStartArguments("--port=8080")
 	expect.DeepEqual(t, cmd, StartCommand{
-		Cached:    false,
-		Port:      8080,
-		SourceMap: false,
+		Cached:   false,
+		Prettier: false,
+		Port:     8080,
 	})
 
-	cmd = parseStartArguments("--source-map")
+	cmd = parseStartArguments("--cached", "--prettier", "--port=8080")
 	expect.DeepEqual(t, cmd, StartCommand{
-		Cached:    false,
-		Port:      8000,
-		SourceMap: true,
-	})
-
-	cmd = parseStartArguments("--cached", "--port=8080", "--source-map")
-	expect.DeepEqual(t, cmd, StartCommand{
-		Cached:    true,
-		Port:      8080,
-		SourceMap: true,
+		Cached:   true,
+		Prettier: true,
+		Port:     8080,
 	})
 }
 
@@ -50,26 +50,26 @@ func TestBuild(t *testing.T) {
 
 	cmd = parseBuildArguments()
 	expect.DeepEqual(t, cmd, BuildCommand{
-		Cached:    false,
-		SourceMap: false,
+		Cached:   false,
+		Prettier: false,
 	})
 
 	cmd = parseBuildArguments("--cached")
 	expect.DeepEqual(t, cmd, BuildCommand{
-		Cached:    true,
-		SourceMap: false,
+		Cached:   true,
+		Prettier: false,
 	})
 
-	cmd = parseBuildArguments("--source-map")
+	cmd = parseBuildArguments("--prettier")
 	expect.DeepEqual(t, cmd, BuildCommand{
-		Cached:    false,
-		SourceMap: true,
+		Cached:   false,
+		Prettier: true,
 	})
 
-	cmd = parseBuildArguments("--cached", "--source-map")
+	cmd = parseBuildArguments("--cached", "--prettier")
 	expect.DeepEqual(t, cmd, BuildCommand{
-		Cached:    true,
-		SourceMap: true,
+		Cached:   true,
+		Prettier: true,
 	})
 }
 

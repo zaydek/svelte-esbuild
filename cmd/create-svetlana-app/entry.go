@@ -6,12 +6,13 @@ import (
 )
 
 func Run() {
-	var cmd Command
-
+	// Cover []string{"create-svetlana-app"} case:
 	if len(os.Args) == 1 {
 		fmt.Println(usage)
 		os.Exit(0)
 	}
+
+	var cmd Command
 	if arg := os.Args[1]; arg == "version" || arg == "--version" || arg == "-v" {
 		fmt.Println(os.Getenv("SVETLANA_VERSION"))
 		os.Exit(0)

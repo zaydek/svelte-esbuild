@@ -3,38 +3,38 @@ package cli
 import (
 	"strings"
 
-	"github.com/zaydek/retro/pkg/term"
+	"github.com/zaydek/svetlana/pkg/term"
 )
 
 var usageOnly = strings.TrimSpace(`
-retro start  Starts the dev server
-retro build  Builds the production-ready build
-retro serve  Serves the production-ready build
+svetlana start  Starts the dev server
+svetlana build  Builds the production-ready build (SSG)
+svetlana serve  Serves the production-ready build
 `)
 
 var usage = `
   ` + term.Bold("Usage:") + `
 
-    retro start        Starts the dev server
-    retro build        Builds the production-ready build
-    retro serve        Serves the production-ready build
+    svetlana start     Starts the dev server
+    svetlana build     Builds the production-ready build (SSG)
+    svetlana serve     Serves the production-ready build
 
-  ` + term.Bold("retro start") + `
+  ` + term.Bold("svetlana start") + `
 
     Starts the dev server
 
       --cached         Use cached resources (default false)
+      --prettier       Format HTML (default false)
       --port=<number>  Port number (default 8000)
-      --source-map     Add source maps (default false)
 
-  ` + term.Bold("retro build") + `
+  ` + term.Bold("svetlana build") + `
 
-    Builds the production-ready build
+    Builds the production-ready build (SSG)
 
       --cached         Use cached resources (default false)
-      --source-map     Add source maps (default false)
+      --prettier       Format HTML (default false)
 
-  ` + term.Bold("retro serve") + `
+  ` + term.Bold("svetlana serve") + `
 
     Serves the production-ready build
 
@@ -42,5 +42,5 @@ var usage = `
 
   ` + term.Bold("Repository:") + `
 
-    ` + term.Underline("https://github.com/zaydek/retro") + `
+    ` + term.Underline("https://github.com/zaydek/svetlana") + `
 `

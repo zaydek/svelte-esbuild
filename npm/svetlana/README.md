@@ -11,6 +11,7 @@
     Starts the dev server
 
       --cached         Use cached resources (default false)
+      --prettier       Format HTML (default false)
       --port=<number>  Port number (default 8000)
 
   sv build
@@ -18,6 +19,7 @@
     Builds the production-ready build
 
       --cached         Use cached resources (default false)
+      --prettier       Format HTML (default false)
 
   sv serve
 

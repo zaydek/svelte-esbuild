@@ -6,7 +6,7 @@ import (
 	"io/ioutil"
 	"os"
 
-	"github.com/zaydek/retro/pkg/loggers"
+	"github.com/zaydek/svetlana/pkg/loggers"
 )
 
 func parseStartArguments(arguments ...string) StartCommand {
@@ -15,11 +15,11 @@ func parseStartArguments(arguments ...string) StartCommand {
 
 	cmd := StartCommand{}
 	flagset.BoolVar(&cmd.Cached, "cached", false, "")
+	flagset.BoolVar(&cmd.Prettier, "prettier", false, "")
 	flagset.IntVar(&cmd.Port, "port", 8000, "")
-	flagset.BoolVar(&cmd.SourceMap, "source-map", false, "")
 	if err := flagset.Parse(arguments); err != nil {
 		loggers.Error("Unrecognized flags and or arguments. " +
-			"Try `retro help` for help.")
+			"Try `svetlana help` for help.")
 		os.Exit(2)
 	}
 	if (cmd.Port < 3e3 || cmd.Port >= 4e3) && (cmd.Port < 5e3 || cmd.Port >= 6e3) && (cmd.Port < 8e3 || cmd.Port >= 9e3) {
@@ -35,10 +35,10 @@ func parseBuildArguments(arguments ...string) BuildCommand {
 
 	cmd := BuildCommand{}
 	flagset.BoolVar(&cmd.Cached, "cached", false, "")
-	flagset.BoolVar(&cmd.SourceMap, "source-map", false, "")
+	flagset.BoolVar(&cmd.Prettier, "prettier", false, "")
 	if err := flagset.Parse(arguments); err != nil {
 		loggers.Error("Unrecognized flags and or arguments. " +
-			"Try `retro help` for help.")
+			"Try `svetlana help` for help.")
 		os.Exit(2)
 	}
 	return cmd
@@ -52,7 +52,7 @@ func parseServeArguments(arguments ...string) ServeCommand {
 	flagset.IntVar(&cmd.Port, "port", 8000, "")
 	if err := flagset.Parse(arguments); err != nil {
 		loggers.Error("Unrecognized flags and or arguments. " +
-			"Try `retro help` for help.")
+			"Try `svetlana help` for help.")
 		os.Exit(2)
 	}
 	if (cmd.Port < 3e3 || cmd.Port >= 4e3) && (cmd.Port < 5e3 || cmd.Port >= 6e3) && (cmd.Port < 8e3 || cmd.Port >= 9e3) {
@@ -63,45 +63,32 @@ func parseServeArguments(arguments ...string) ServeCommand {
 }
 
 func ParseCLIArguments() interface{} {
-	// Cover []string{"retro"} case:
+	// Cover []string{"svetlana"} case:
 	if len(os.Args) == 1 {
 		fmt.Println(usage)
 		os.Exit(0)
 	}
 
 	var cmd interface{}
-	switch os.Args[1] {
-	// $ retro version
-	case "version":
-		fallthrough
-	case "--version":
-		fallthrough
-	case "-v":
-		fmt.Println(os.Getenv("RETRO_VERSION"))
+	if arg := os.Args[1]; arg == "version" || arg == "--version" || arg == "--v" {
+		fmt.Println(os.Getenv("SVETLANA_VERSION"))
 		os.Exit(0)
-	// $ retro usage
-	case "usage":
-		fallthrough
-	case "--usage":
-		fallthrough
-	case "help":
-		fallthrough
-	case "--help":
+	} else if arg == "usage" || arg == "--usage" || arg == "help" || arg == "--help" {
 		fmt.Println(usage)
 		os.Exit(0)
-	// $ retro start
-	case "start":
+	} else if arg == "start" {
+		os.Setenv("__DEV__", "true")
 		os.Setenv("NODE_ENV", "development")
 		cmd = parseStartArguments(os.Args[2:]...)
-	// $ retro build
-	case "build":
+	} else if arg == "build" {
+		os.Setenv("__DEV__", "false")
 		os.Setenv("NODE_ENV", "production")
 		cmd = parseBuildArguments(os.Args[2:]...)
-	// $ retro serve
-	case "serve":
+	} else if arg == "serve" {
+		os.Setenv("__DEV__", "false")
 		os.Setenv("NODE_ENV", "production")
 		cmd = parseServeArguments(os.Args[2:]...)
-	default:
+	} else {
 		loggers.Error("Unrecognized command. " +
 			"Here are the available commands:\n\n" +
 			usageOnly)
