@@ -6,40 +6,33 @@ import (
 	"os"
 	p "path"
 	"strings"
-	"text/template"
 
 	"github.com/zaydek/svetlana/cmd/svetlana/cli"
 	"github.com/zaydek/svetlana/pkg/perm"
 )
 
-// parseBaseTemplate parses public/index.html.
-func parseBaseTemplate(config DirectoryConfiguration) (*template.Template, error) {
+func readBaseHTML(config DirectoryConfiguration) (string, error) {
 	bstr, err := ioutil.ReadFile(p.Join(config.AssetDirectory, "index.html"))
 	if err != nil {
-		return nil, err
+		return "", err
 	}
 
-	text := string(bstr)
-	if !strings.Contains(text, "%head%") {
-		return nil, errors.New("No such template tag `%head%`. " +
+	base := string(bstr)
+	if !strings.Contains(base, "%head%") {
+		return "", errors.New("No such template tag `%head%`. " +
 			"This is the entry point for the `<Head>` component in your page components. " +
 			"Add `%head%` to `<head>`.")
 	}
 
-	if !strings.Contains(text, "%page%") {
-		return nil, errors.New("No such template tag `%page%`. " +
+	if !strings.Contains(base, "%page%") {
+		return "", errors.New("No such template tag `%page%`. " +
 			"This is the entry point for the `<Page>` component in your page components. " +
 			"Add `%page%` to `<body>`.")
 	}
 
-	text = strings.Replace(text, "%head%", "{{ .Head }}", 1)
-	text = strings.Replace(text, "%page%", "{{ .Page }}", 1)
-
-	tmpl, err := template.New(p.Join(config.AssetDirectory, "index.html")).Parse(text)
-	if err != nil {
-		return nil, err
-	}
-	return tmpl, nil
+	base = strings.Replace(base, "%head%", "{{ .Head }}", 1)
+	base = strings.Replace(base, "%page%", "{{ .Page }}", 1)
+	return base, nil
 }
 
 // statOrCreateDir stats for the presence of a directory or creates one.
@@ -84,7 +77,7 @@ func newRuntime() (Runtime, error) {
 		}
 	}
 
-	if runtime.tmpl, err = parseBaseTemplate(runtime.DirConfiguration); err != nil {
+	if runtime.BaseHTML, err = readBaseHTML(runtime.DirConfiguration); err != nil {
 		return Runtime{}, err
 	}
 

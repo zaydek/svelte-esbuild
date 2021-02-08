@@ -1,11 +1,5 @@
 package svetlana
 
-import (
-	"text/template"
-
-	"github.com/evanw/esbuild/pkg/api"
-)
-
 type Cmd uint8
 
 const (
@@ -22,20 +16,19 @@ type PageBasedRoute struct {
 }
 
 type DirectoryConfiguration struct {
-	AssetDirectory string
-	PagesDirectory string
-	CacheDirectory string
-	BuildDirectory string
+	AssetDirectory string `json:"asset_directory"`
+	PagesDirectory string `json:"pages_directory"`
+	CacheDirectory string `json:"cache_directory"`
+	BuildDirectory string `json:"build_directory"`
 }
 
 type Runtime struct {
-	// Unexported
-	tmpl     *template.Template
-	errors   []api.Message
-	warnings []api.Message
+	// // Unexported
+	// errors   []api.Message
+	// warnings []api.Message
 
-	// Exported
-	Command          interface{}
-	DirConfiguration DirectoryConfiguration
-	PageBasedRouter  []PageBasedRoute
+	Command          interface{}            `json:"command"`
+	DirConfiguration DirectoryConfiguration `json:"dir_config"`
+	BaseHTML         string                 `json:"base_html"`
+	PageBasedRouter  []PageBasedRoute       `json:"page_based_router"`
 }
