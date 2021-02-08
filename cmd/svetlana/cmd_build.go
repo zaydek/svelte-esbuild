@@ -13,42 +13,42 @@ import (
 	"github.com/zaydek/svetlana/pkg/perm"
 )
 
-// renderedPageMap describes a map of rendered pages.
-type renderedPageMap map[string]struct {
+// renderedPagesMap describes a map of rendered pages.
+type renderedPagesMap map[string]struct {
 	*PageBasedRoute
 	Page string `json:"page"`
 }
 
-type pageResponse struct {
-	Errors   []api.Message   `json:"errors"`
-	Warnings []api.Message   `json:"warnings"`
-	Data     renderedPageMap `json:"data"`
+type pagesResponse struct {
+	Errors   []api.Message    `json:"errors"`
+	Warnings []api.Message    `json:"warnings"`
+	Data     renderedPagesMap `json:"data"`
 }
 
 // TODO: Add better support for stdout, stderr.
-func renderPages(runtime Runtime) (pageResponse, error) {
-	srcbstr, err := ioutil.ReadFile("scripts/pages.js")
+func renderPages(runtime Runtime) (pagesResponse, error) {
+	bstr, err := ioutil.ReadFile("scripts/pages.js")
 	if err != nil {
-		return pageResponse{}, err
+		return pagesResponse{}, err
 	}
 
-	runbstr, err := json.MarshalIndent(runtime, "", "\t")
+	rstr, err := json.MarshalIndent(runtime, "", "\t")
 	if err != nil {
-		return pageResponse{}, err
+		return pagesResponse{}, err
 	}
 
 	cmd := exec.Command("node")
 	stdin, err := cmd.StdinPipe()
 	if err != nil {
-		return pageResponse{}, err
+		return pagesResponse{}, err
 	}
 
 	go func() {
 		defer stdin.Close()
-		stdin.Write(srcbstr)
+		stdin.Write(bstr)
 		stdin.Write([]byte("\n"))
 		stdin.Write([]byte("run("))
-		stdin.Write(runbstr)
+		stdin.Write(rstr)
 		stdin.Write([]byte(")"))
 		stdin.Write([]byte("\n")) // EOF
 	}()
@@ -57,21 +57,21 @@ func renderPages(runtime Runtime) (pageResponse, error) {
 	if err != nil {
 		// TODO
 		if len(out) > 0 {
-			return pageResponse{}, errors.New(string(out))
+			return pagesResponse{}, errors.New(string(out))
 		}
-		return pageResponse{}, err
+		return pagesResponse{}, err
 	}
 
-	var response pageResponse
+	var response pagesResponse
 	if err := json.Unmarshal(out, &response); err != nil {
-		return pageResponse{}, err
+		return pagesResponse{}, err
 	}
 
 	// TODO
 	if len(response.Errors) > 0 {
-		return pageResponse{}, errors.New(response.Errors[0].Text)
+		return pagesResponse{}, errors.New(response.Errors[0].Text)
 	} else if len(response.Warnings) > 0 {
-		return pageResponse{}, errors.New(response.Warnings[0].Text)
+		return pagesResponse{}, errors.New(response.Warnings[0].Text)
 	}
 	return response, nil
 }

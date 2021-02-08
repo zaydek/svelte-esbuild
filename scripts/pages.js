@@ -6,11 +6,12 @@ const prettier = require("prettier")
 const sveltePlugin = require("./scripts/svelte-plugin.js")
 const { no_ext } = require("./scripts/helpers")
 
+// TODO: Extract to a share function; getUserConfigs.
 const userSvetlanaConfig = { plugins: [] }
 const userPrettierConfig = {}
 
-// renderComponent renders a component from a page-based route.
-async function renderComponent(runtime, page_based_route) {
+// renderAsComponent renders a component from a page-based route.
+async function renderAsComponent(runtime, page_based_route) {
 	const result = await esbuild.build({
 		bundle: true,
 		define: {
@@ -41,10 +42,10 @@ async function renderComponent(runtime, page_based_route) {
 	return component.render()
 }
 
-// renderPage renders a page from a rendered component.
+// renderAsPage renders a page from a rendered component.
 //
 // prettier-ignore
-async function renderPage(runtime, component) {
+async function renderAsPage(runtime, component) {
 	const head = component.head
 		.replace(/></g, ">\n\t\t<")
 		.replace(/\/>/g, " />")
@@ -82,8 +83,8 @@ async function run(runtime) {
 	const chain = []
 	for (const each of runtime.page_based_router) {
 		const p = new Promise(async resolve => {
-			const component = await renderComponent(runtime, each)
-			const page = await renderPage(runtime, component)
+			const component = await renderAsComponent(runtime, each)
+			const page = await renderAsPage(runtime, component)
 			resolve({ ...each, page })
 		})
 		chain.push(p)
