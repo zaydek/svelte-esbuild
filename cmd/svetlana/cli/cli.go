@@ -15,7 +15,7 @@ func parseStartArguments(arguments ...string) StartCommand {
 
 	cmd := StartCommand{}
 	flagset.BoolVar(&cmd.Cached, "cached", false, "")
-	flagset.BoolVar(&cmd.Prettier, "prettier", false, "")
+	flagset.BoolVar(&cmd.Prettier, "prettier", true, "")
 	flagset.IntVar(&cmd.Port, "port", 8000, "")
 	if err := flagset.Parse(arguments); err != nil {
 		loggers.Error("Unrecognized flags and or arguments. " +
@@ -35,7 +35,7 @@ func parseBuildArguments(arguments ...string) BuildCommand {
 
 	cmd := BuildCommand{}
 	flagset.BoolVar(&cmd.Cached, "cached", false, "")
-	flagset.BoolVar(&cmd.Prettier, "prettier", false, "")
+	flagset.BoolVar(&cmd.Prettier, "prettier", true, "")
 	if err := flagset.Parse(arguments); err != nil {
 		loggers.Error("Unrecognized flags and or arguments. " +
 			"Try `svetlana help` for help.")

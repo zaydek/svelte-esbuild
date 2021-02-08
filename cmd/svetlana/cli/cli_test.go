@@ -12,14 +12,14 @@ func TestStart(t *testing.T) {
 	cmd = parseStartArguments()
 	expect.DeepEqual(t, cmd, StartCommand{
 		Cached:   false,
-		Prettier: false,
+		Prettier: true,
 		Port:     8000,
 	})
 
 	cmd = parseStartArguments("--cached")
 	expect.DeepEqual(t, cmd, StartCommand{
 		Cached:   true,
-		Prettier: false,
+		Prettier: true,
 		Port:     8000,
 	})
 
@@ -33,7 +33,7 @@ func TestStart(t *testing.T) {
 	cmd = parseStartArguments("--port=8080")
 	expect.DeepEqual(t, cmd, StartCommand{
 		Cached:   false,
-		Prettier: false,
+		Prettier: true,
 		Port:     8080,
 	})
 
@@ -51,13 +51,13 @@ func TestBuild(t *testing.T) {
 	cmd = parseBuildArguments()
 	expect.DeepEqual(t, cmd, BuildCommand{
 		Cached:   false,
-		Prettier: false,
+		Prettier: true,
 	})
 
 	cmd = parseBuildArguments("--cached")
 	expect.DeepEqual(t, cmd, BuildCommand{
 		Cached:   true,
-		Prettier: false,
+		Prettier: true,
 	})
 
 	cmd = parseBuildArguments("--prettier")

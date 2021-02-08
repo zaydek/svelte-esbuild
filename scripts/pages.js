@@ -3,16 +3,13 @@ const fs = require("fs/promises")
 const path = require("path")
 const prettier = require("prettier")
 
-// TODO: Change to process.cwd?
-const svelte = require("./services/svelte-plugin.js")
-const { no_ext } = require("./services/helpers")
+const sveltePlugin = require("./scripts/svelte-plugin.js")
+const { no_ext } = require("./scripts/helpers")
 
 const userSvetlanaConfig = { plugins: [] }
 const userPrettierConfig = {}
 
 // renderComponent renders a component from a page-based route.
-//
-// TODO: Add support for incremental recompilation.
 async function renderComponent(runtime, page_based_route) {
 	const result = await esbuild.build({
 		bundle: true,
@@ -24,7 +21,7 @@ async function renderComponent(runtime, page_based_route) {
 		format: "cjs",
 		outfile: `${runtime.dir_config.cache_dir}/${no_ext(page_based_route.src_path)}.esbuild.js`,
 		plugins: [
-			svelte({
+			sveltePlugin({
 				generate: "ssr",
 			}),
 			...userSvetlanaConfig.plugins,
@@ -45,25 +42,25 @@ async function renderComponent(runtime, page_based_route) {
 }
 
 // renderPage renders a page from a rendered component.
+//
+// prettier-ignore
 async function renderPage(runtime, component) {
-	// prettier-ignore
 	const head = component.head
 		.replace(/></g, ">\n\t\t<")
 		.replace(/\/>/g, " />")
 
-	const body = `
-<noscript>You need to enable JavaScript to run this app.</noscript>
-<div id="app">${component.html}</div>
-<script src="/app.js"></script>
-`
+	const body = `<noscript>You need to enable JavaScript to run this app.</noscript>
+		<div id="app">
+${component.html}
+		</div>
+		<script src="/app.js"></script>`
 
-	// prettier-ignore
 	let page = runtime.base_page
 		.replace("%head%", head)
 		.replace("%page%", body)
 
-	// if (runtime.command.prettier && userPrettierConfig !== undefined) {
-	if (userPrettierConfig !== undefined) {
+	if (runtime.command.prettier && prettier !== undefined &&
+			userPrettierConfig !== undefined) {
 		page = prettier.format(page, {
 			...userPrettierConfig,
 			parser: "html",
@@ -72,6 +69,8 @@ async function renderPage(runtime, component) {
 	return page
 }
 
+// TODO: Change API to service-based architecture and or add support for
+// incremental recompilation.
 async function run(runtime) {
 	try {
 		userSvetlanaConfig = require(path.join(process.cwd(), "svetlana.config.js"))
@@ -92,7 +91,7 @@ async function run(runtime) {
 
 	const arr = await Promise.all(chain)
 	const map = arr.reduce((acc, each) => {
-		acc[each.path] = each.page
+		acc[each.path] = each
 		return acc
 	}, {})
 

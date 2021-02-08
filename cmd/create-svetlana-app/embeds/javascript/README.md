@@ -17,7 +17,7 @@ Learn more about Svetlana: https://github.com/zaydek/svetlana.
     Starts the dev server
 
       --cached         Use cached resources (default false)
-      --prettier       Format HTML (default false)
+      --prettier       Format HTML (default true)
       --port=<number>  Port number (default 8000)
 
   svetlana build
@@ -25,7 +25,7 @@ Learn more about Svetlana: https://github.com/zaydek/svetlana.
     Builds the production-ready build (SSG)
 
       --cached         Use cached resources (default false)
-      --prettier       Format HTML (default false)
+      --prettier       Format HTML (default true)
 
   svetlana serve
 

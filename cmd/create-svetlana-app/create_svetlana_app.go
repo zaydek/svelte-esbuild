@@ -98,7 +98,7 @@ func (cmd Command) CreateApp() {
 	for _, each := range paths {
 		if dir := p.Dir(each); dir != "." {
 			if err := os.MkdirAll(dir, perm.Directory); err != nil {
-				loggers.ErrorAndEnd("Aborted.\n\n" +
+				loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
 					err.Error())
 			}
 		}
