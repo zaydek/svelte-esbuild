@@ -116,6 +116,8 @@ func renderAppToDisk(runtime Runtime) error {
 }
 
 func (r Runtime) Build() {
+	must(copyAssetDirToBuildDir(r.DirConfiguration))
+
 	pages, err := renderPages(r)
 	must(err)
 

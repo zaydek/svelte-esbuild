@@ -5,6 +5,12 @@ export default function open(path, { scrollX, scrollY } = { scrollX: 0, scrollY:
 	scrollY = scrollY || 0
 
 	store_path.set(path)
+
+	// Dedupe pushState:
+	if (window.location.pathname === path) {
+		// No-op
+		return
+	}
 	window.history.pushState({}, "", path)
 	window.scrollTo(scrollX, scrollY)
 }

@@ -1,3 +1,4 @@
+import { onDestroy, onMount } from "svelte"
 import { writable } from "svelte/store"
 
 function getCurrentPath() {
@@ -9,4 +10,11 @@ function getCurrentPath() {
 	return window.location.pathname
 }
 
-export default writable(getCurrentPath())
+if (typeof window !== "undefined") {
+	window.addEventListener("popstate", () => {
+		store.set(window.location.pathname)
+	})
+}
+
+const store = writable(getCurrentPath())
+export default store
