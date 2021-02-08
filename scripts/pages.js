@@ -1,7 +1,6 @@
 const esbuild = require("esbuild")
-const prettier = require("prettier")
-
 const helpers = require("./scripts/helpers")
+const prettier = require("prettier")
 const sveltePlugin = require("./scripts/svelte-plugin.js")
 
 let configs = {}

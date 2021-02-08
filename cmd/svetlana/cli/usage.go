@@ -24,8 +24,9 @@ var usage = `
     Starts the dev server
 
       --cached         Use cached resources (default false)
-      --prettier       Format HTML (default true)
       --port=<number>  Port number (default 8000)
+      --prettier       Format HTML (default true)
+      --source-map     Add source maps (default true)
 
   ` + term.Bold("svetlana build") + `
 
@@ -33,6 +34,7 @@ var usage = `
 
       --cached         Use cached resources (default false)
       --prettier       Format HTML (default true)
+      --source-map     Add source maps (default true)
 
   ` + term.Bold("svetlana serve") + `
 

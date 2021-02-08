@@ -76,6 +76,45 @@ func renderPages(runtime Runtime) (pagesResponse, error) {
 	return response, nil
 }
 
+// TODO: Add better support for stdout, stderr.
+func renderAppToDisk(runtime Runtime) error {
+	bstr, err := ioutil.ReadFile("scripts/app.js")
+	if err != nil {
+		return err
+	}
+
+	rstr, err := json.MarshalIndent(runtime, "", "\t")
+	if err != nil {
+		return err
+	}
+
+	cmd := exec.Command("node")
+	stdin, err := cmd.StdinPipe()
+	if err != nil {
+		return err
+	}
+
+	go func() {
+		defer stdin.Close()
+		stdin.Write(bstr)
+		stdin.Write([]byte("\n"))
+		stdin.Write([]byte("run("))
+		stdin.Write(rstr)
+		stdin.Write([]byte(")"))
+		stdin.Write([]byte("\n")) // EOF
+	}()
+
+	out, err := cmd.CombinedOutput()
+	if err != nil {
+		// TODO
+		if len(out) > 0 {
+			return errors.New(string(out))
+		}
+		return err
+	}
+	return nil
+}
+
 func (r Runtime) Build() {
 	pages, err := renderPages(r)
 	must(err)
@@ -92,4 +131,6 @@ func (r Runtime) Build() {
 				err.Error())
 		}
 	}
+
+	must(renderAppToDisk(r))
 }

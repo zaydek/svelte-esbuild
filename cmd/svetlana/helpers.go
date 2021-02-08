@@ -3,6 +3,7 @@ package svetlana
 import (
 	"strconv"
 
+	"github.com/evanw/esbuild/pkg/api"
 	"github.com/zaydek/svetlana/cmd/svetlana/cli"
 	"github.com/zaydek/svetlana/pkg/loggers"
 )
@@ -24,6 +25,22 @@ func (r Runtime) getCmd() Cmd {
 		return CmdBuild
 	case cli.ServeCommand:
 		return CmdServe
+	}
+	return 0
+}
+
+// getSourceMap gets the current source map enum.
+func (r Runtime) getSourceMap() api.SourceMap {
+	if cmd := r.getCmd(); cmd == CmdStart {
+		if r.Command.(cli.StartCommand).SourceMap {
+			return api.SourceMapLinked
+		}
+		return api.SourceMapNone
+	} else if cmd == CmdBuild {
+		if r.Command.(cli.BuildCommand).SourceMap {
+			return api.SourceMapLinked
+		}
+		return api.SourceMapNone
 	}
 	return 0
 }

@@ -2,26 +2,28 @@
 
   Usage:
 
-    sv start           Starts the dev server
-    sv build           Builds the production-ready build
-    sv serve           Serves the production-ready build
+    svetlana start     Starts the dev server
+    svetlana build     Builds the production-ready build
+    svetlana serve     Serves the production-ready build
 
-  sv start
+  svetlana start
 
     Starts the dev server
 
       --cached         Use cached resources (default false)
-      --prettier       Format HTML (default true)
       --port=<number>  Port number (default 8000)
+      --prettier       Format HTML (default true)
+      --sourcemap      Add source maps (default true)
 
-  sv build
+  svetlana build
 
     Builds the production-ready build
 
       --cached         Use cached resources (default false)
       --prettier       Format HTML (default true)
+      --sourcemap      Add source maps (default true)
 
-  sv serve
+  svetlana serve
 
     Serves the production-ready build
 
