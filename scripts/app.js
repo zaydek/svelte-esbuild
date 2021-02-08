@@ -12,7 +12,8 @@ async function run(runtime) {
 		userSvetlanaConfig = require(path.join(process.cwd(), "svetlana.config.js"))
 	} catch {}
 
-	const raw = `<script>
+	// __cache__/App.svelte
+	const appstr = `<script>
 	import { Route } from "../router"
 
 	${runtime.page_based_router.map(each => `import ${each.component} from "../${each.src_path}"`).join("\n\t")}
@@ -26,8 +27,17 @@ ${runtime.page_based_router
 `,
 	)
 	.join("\n")}`
+	fs.writeFile(`${runtime.dir_config.cache_dir}/App.svelte`, appstr)
 
-	fs.writeFile(`${runtime.dir_config.cache_dir}/app.svelte`, raw)
+	// __cache__/main.js
+	const mainstr = `import App from "./App.svelte"
+
+export default new App({
+	hydrate: true,
+	target: document.getElementById("app"),
+})
+`
+	fs.writeFile(`${runtime.dir_config.cache_dir}/main.js`, mainstr)
 
 	const result = await esbuild.build({
 		bundle: true,
@@ -35,7 +45,7 @@ ${runtime.page_based_router
 			__DEV__: process.env.__DEV__,
 			NODE_ENV: process.env.NODE_ENV,
 		},
-		entryPoints: [`${runtime.dir_config.cache_dir}/app.svelte`],
+		entryPoints: [`${runtime.dir_config.cache_dir}/main.js`],
 		minify: process.env.NODE_ENV === "production",
 		outfile: `${runtime.dir_config.build_dir}/app.js`,
 		plugins: [

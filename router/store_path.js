@@ -1,10 +1,11 @@
 import { writable } from "svelte/store"
 
-function resolvePath() {
-	if (window.location.pathname === "/") {
-		return "*"
-	}
-	return window.location.pathname
-}
+// function getWindowPath() {
+// 	if (typeof window === undefined) {
+// 		return "/"
+// 	}
+// 	return window.location.pathname === "/" ? "*" : window.location.pathname
+// }
 
-export default writable(resolvePath())
+// FIXME
+export default writable("/")

@@ -3,4 +3,4 @@
 	<meta type="description" content="Hello, world!" />
 </svelte:head>
 
-<h1>Hello, world! (/nested/)</h1>
+<h1 on:click={() => alert("ohohohohoh")}>Hello, world! (/nested/)</h1>
