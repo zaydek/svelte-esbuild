@@ -6,9 +6,9 @@ const prettier = require("prettier")
 const sveltePlugin = require("./scripts/svelte-plugin.js")
 const { no_ext } = require("./scripts/helpers")
 
-// TODO: Extract to a share function; getUserConfigs.
-const userSvetlanaConfig = { plugins: [] }
-const userPrettierConfig = {}
+// TODO: Extract.
+let userSvetlanaConfig = { plugins: [] }
+let userPrettierConfig = {}
 
 // renderAsComponent renders a component from a page-based route.
 async function renderAsComponent(runtime, page_based_route) {
@@ -60,13 +60,13 @@ ${component.html}
 		.replace("%head%", head)
 		.replace("%page%", body)
 
-	if (runtime.command.prettier && prettier !== undefined &&
-			userPrettierConfig !== undefined) {
+	// if (runtime.command.prettier && prettier !== undefined &&
+	// 		userPrettierConfig !== undefined) {
 		page = prettier.format(page, {
 			...userPrettierConfig,
 			parser: "html",
 		})
-	}
+	// }
 	return page
 }
 
@@ -75,7 +75,9 @@ ${component.html}
 async function run(runtime) {
 	try {
 		userSvetlanaConfig = require(path.join(process.cwd(), "svetlana.config.js"))
+	} catch {}
 
+	try {
 		const prettierrc = await fs.readFile(".prettierrc")
 		userPrettierConfig = JSON.parse(prettierrc)
 	} catch {}

@@ -18,7 +18,7 @@
 				open(path, { scrollX, scrollY })
 		  }
 		: undefined}
-	{...$$props}
+	{...{ ...$$props, path: undefined }}
 >
 	<slot />
 </a>

@@ -1,6 +1,5 @@
 import { writable } from "svelte/store"
 
-// prettier-ignore
 function getCurrentPath() {
 	if (typeof window === "undefined") {
 		return "/"
@@ -10,5 +9,4 @@ function getCurrentPath() {
 	return window.location.pathname
 }
 
-// export default writable(typeof window === "undefined" ? "/" : window.location.pathname)
 export default writable(getCurrentPath())

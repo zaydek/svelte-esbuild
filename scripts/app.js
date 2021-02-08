@@ -4,7 +4,7 @@ const path = require("path")
 
 const sveltePlugin = require("./svelte-plugin.js")
 
-// TODO: Extract to a share function; getUserConfigs.
+// TODO: Extract.
 const userSvetlanaConfig = { plugins: [] }
 
 async function run(runtime) {
