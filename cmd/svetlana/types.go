@@ -16,17 +16,13 @@ type PageBasedRoute struct {
 }
 
 type DirectoryConfiguration struct {
-	AssetDirectory string `json:"asset_directory"`
-	PagesDirectory string `json:"pages_directory"`
-	CacheDirectory string `json:"cache_directory"`
-	BuildDirectory string `json:"build_directory"`
+	AssetDirectory string `json:"asset_dir"`
+	PagesDirectory string `json:"pages_dir"`
+	CacheDirectory string `json:"cache_dir"`
+	BuildDirectory string `json:"build_dir"`
 }
 
 type Runtime struct {
-	// // Unexported
-	// errors   []api.Message
-	// warnings []api.Message
-
 	Command          interface{}            `json:"command"`
 	DirConfiguration DirectoryConfiguration `json:"dir_config"`
 	BasePage         string                 `json:"base_page"`

@@ -16,22 +16,17 @@ func readBaseHTML(config DirectoryConfiguration) (string, error) {
 	if err != nil {
 		return "", err
 	}
-
 	base := string(bstr)
 	if !strings.Contains(base, "%head%") {
 		return "", errors.New("No such template tag `%head%`. " +
 			"This is the entry point for the `<Head>` component in your page components. " +
 			"Add `%head%` to `<head>`.")
 	}
-
 	if !strings.Contains(base, "%page%") {
 		return "", errors.New("No such template tag `%page%`. " +
 			"This is the entry point for the `<Page>` component in your page components. " +
 			"Add `%page%` to `<body>`.")
 	}
-
-	base = strings.Replace(base, "%head%", "{{ .Head }}", 1)
-	base = strings.Replace(base, "%page%", "{{ .Page }}", 1)
 	return base, nil
 }
 

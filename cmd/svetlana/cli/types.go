@@ -1,16 +1,16 @@
 package cli
 
 type StartCommand struct {
-	Cached   bool
-	Prettier bool
-	Port     int
+	Cached   bool `json:"cached"`
+	Prettier bool `json:"prettier"`
+	Port     int  `json:"port"`
 }
 
 type BuildCommand struct {
-	Cached   bool
-	Prettier bool
+	Cached   bool `json:"cached"`
+	Prettier bool `json:"prettier"`
 }
 
 type ServeCommand struct {
-	Port int
+	Port int `json:"port"`
 }

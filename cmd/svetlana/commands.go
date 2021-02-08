@@ -1,6 +1,7 @@
 package svetlana
 
 import (
+	"encoding/json"
 	"fmt"
 	"io/ioutil"
 	"net/http"
@@ -15,29 +16,35 @@ import (
 func (r Runtime) Start() {}
 
 func (r Runtime) Build() {
-	bstr, err := ioutil.ReadFile("services/pages.js")
-	if err != nil {
-		panic(err)
-	}
+	srcbstr, err := ioutil.ReadFile("services/pages.js")
+	must(err)
+
+	runbstr, err := json.MarshalIndent(r, "", "\t")
+	must(err)
 
 	cmd := exec.Command("node")
-	// cmd.Dir = "services"
-
 	stdinPipe, err := cmd.StdinPipe()
-	if err != nil {
-		panic(err)
-	}
+	must(err)
 
 	go func() {
 		defer stdinPipe.Close()
-		stdinPipe.Write(bstr)
+		stdinPipe.Write(srcbstr)
+		stdinPipe.Write([]byte("\n"))
+		stdinPipe.Write([]byte("run("))
+		stdinPipe.Write(runbstr)
+		stdinPipe.Write([]byte(")"))
+		stdinPipe.Write([]byte("\n")) // EOF
 	}()
 
 	out, err := cmd.CombinedOutput()
 	if err != nil {
 		panic(string(out))
 	}
-	fmt.Println(string(out))
+
+	var m map[string]interface{}
+	must(json.Unmarshal(out, &m))
+	fmt.Print(m["data"].(map[string]interface{})["/"])
+	fmt.Print(m["data"].(map[string]interface{})["/nested/"])
 }
 
 func (r Runtime) Serve() {
