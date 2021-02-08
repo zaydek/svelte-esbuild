@@ -1,14 +1,10 @@
 const esbuild = require("esbuild")
-const fs = require("fs/promises")
-const path = require("path")
 const prettier = require("prettier")
 
+const helpers = require("./scripts/helpers")
 const sveltePlugin = require("./scripts/svelte-plugin.js")
-const { no_ext } = require("./scripts/helpers")
 
-// TODO: Extract.
-let userSvetlanaConfig = { plugins: [] }
-let userPrettierConfig = {}
+let configs = {}
 
 // renderAsComponent renders a component from a page-based route.
 async function renderAsComponent(runtime, page_based_route) {
@@ -20,12 +16,12 @@ async function renderAsComponent(runtime, page_based_route) {
 		},
 		entryPoints: [page_based_route.src_path],
 		format: "cjs",
-		outfile: `${runtime.dir_config.cache_dir}/${no_ext(page_based_route.src_path)}.esbuild.js`,
+		outfile: `${runtime.dir_config.cache_dir}/${helpers.no_ext(page_based_route.src_path)}.esbuild.js`,
 		plugins: [
 			sveltePlugin({
 				generate: "ssr",
 			}),
-			...userSvetlanaConfig.plugins,
+			...configs.svetlana.plugins,
 		],
 	})
 	if ((result.errors && result.errors.length > 0) || (result.warnings && result.warnings.length > 0)) {
@@ -38,7 +34,7 @@ async function renderAsComponent(runtime, page_based_route) {
 		)
 		process.kill(1)
 	}
-	const component = require(`./${runtime.dir_config.cache_dir}/${no_ext(page_based_route.src_path)}.esbuild.js`).default
+	const component = require(`./${runtime.dir_config.cache_dir}/${helpers.no_ext(page_based_route.src_path)}.esbuild.js`).default
 	return component.render()
 }
 
@@ -60,27 +56,19 @@ ${component.html}
 		.replace("%head%", head)
 		.replace("%page%", body)
 
-	// if (runtime.command.prettier && prettier !== undefined &&
-	// 		userPrettierConfig !== undefined) {
+	if (runtime.command.prettier) {
 		page = prettier.format(page, {
-			...userPrettierConfig,
+			...configs.prettier,
 			parser: "html",
 		})
-	// }
+	}
 	return page
 }
 
 // TODO: Change API to service-based architecture and or add support for
 // incremental recompilation.
 async function run(runtime) {
-	try {
-		userSvetlanaConfig = require(path.join(process.cwd(), "svetlana.config.js"))
-	} catch {}
-
-	try {
-		const prettierrc = await fs.readFile(".prettierrc")
-		userPrettierConfig = JSON.parse(prettierrc)
-	} catch {}
+	configs = await helpers.load_user_configs()
 
 	const chain = []
 	for (const each of runtime.page_based_router) {
