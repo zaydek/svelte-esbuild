@@ -2,6 +2,7 @@ package create_svetlana_app
 
 import (
 	"flag"
+	"fmt"
 	"io/ioutil"
 	"os"
 
@@ -14,10 +15,10 @@ func parseArguments(arguments ...string) Command {
 
 	cmd := Command{}
 	// flagset.StringVar(&cmd.Template, "template", "javascript", "")
-	// if err := flagset.Parse(arguments); err != nil {
-	// 	fmt.Println(usage)
-	// 	os.Exit(2)
-	// }
+	if err := flagset.Parse(arguments); err != nil {
+		fmt.Println(usage)
+		os.Exit(2)
+	}
 	// if cmd.Template != "javascript" && cmd.Template != "typescript" {
 	// 	loggers.Error("`--template` must be `javascript` or `typescript`. " +
 	// 		"Here’s what you can do:\n\n" +

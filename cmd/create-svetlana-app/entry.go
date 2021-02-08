@@ -33,5 +33,5 @@ func Run() {
 	default:
 		cmd = parseArguments(os.Args[1:]...)
 	}
-	cmd.CreateSvetlanaApp()
+	cmd.CreateApp()
 }

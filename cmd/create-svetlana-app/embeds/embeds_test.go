@@ -15,10 +15,11 @@ const want = `{
 		"serve": "svetlana serve"
 	},
 	"dependencies": {
-    "esbuild": "^0.8.42",
-    "prettier": "^2.2.1",
     "svelte": "^3.32.1",
     "svetlana": "^1.33.7"
+	},
+	"devDependencies": {
+    "esbuild": "^0.8.42"
 	}
 }
 `

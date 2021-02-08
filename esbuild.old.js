@@ -7,6 +7,19 @@ const util = require("util")
 const prettierrc = require("./helpers/prettierrc.js")
 const sveltePlugin = require("./helpers/svelte-plugin.js")
 
+// {
+// 	"printWidth": 9999,
+// 	"tabWidth": 2,
+// 	"useTabs": true,
+// 	"semi": false,
+// 	"singleQuote": false,
+// 	"trailingComma": "all",
+// 	"bracketSpacing": true,
+// 	"jsxBracketSameLine": false,
+// 	"arrowParens": "avoid",
+// 	"proseWrap": "always"
+// }
+
 const exec = util.promisify(require("child_process").exec)
 
 // "path/to/name.ext" -> "name"
