@@ -14,27 +14,32 @@ import (
 	"github.com/zaydek/svetlana/pkg/run"
 )
 
-// renderedPagesMap describes a map of rendered pages.
-type renderedPagesMap map[string]struct {
+type pages map[string]struct {
 	*PageBasedRoute
 	Page string `json:"page"`
 }
 
-type pagesResponse struct {
-	Errors   []api.Message    `json:"errors"`
-	Warnings []api.Message    `json:"warnings"`
-	Data     renderedPagesMap `json:"data"`
+type srvResponse struct {
+	Errors   []api.Message          `json:"errors"`
+	Warnings []api.Message          `json:"warnings"`
+	Data     map[string]interface{} `json:"data"`
 }
 
-func renderPages(runtime Runtime) (pagesResponse, error) {
+type srvPagesResponse struct {
+	Errors   []api.Message `json:"errors"`
+	Warnings []api.Message `json:"warnings"`
+	Data     pages         `json:"data"`
+}
+
+func renderPages(runtime Runtime) (srvPagesResponse, error) {
 	bstr, err := ioutil.ReadFile("scripts/pages.js")
 	if err != nil {
-		return pagesResponse{}, err
+		return srvPagesResponse{}, err
 	}
 
 	rstr, err := json.MarshalIndent(runtime, "", "\t")
 	if err != nil {
-		return pagesResponse{}, err
+		return srvPagesResponse{}, err
 	}
 
 	var buf bytes.Buffer
@@ -47,19 +52,19 @@ func renderPages(runtime Runtime) (pagesResponse, error) {
 
 	stdout, err := run.Cmd(buf.Bytes(), "node")
 	if err != nil {
-		return pagesResponse{}, err
+		return srvPagesResponse{}, err
 	}
 
-	var response pagesResponse
+	var response srvPagesResponse
 	if err := json.Unmarshal(stdout, &response); err != nil {
-		return pagesResponse{}, err
+		return srvPagesResponse{}, err
 	}
 
 	// TODO
 	if len(response.Errors) > 0 {
-		return pagesResponse{}, errors.New(response.Errors[0].Text)
+		return srvPagesResponse{}, errors.New(response.Errors[0].Text)
 	} else if len(response.Warnings) > 0 {
-		return pagesResponse{}, errors.New(response.Warnings[0].Text)
+		return srvPagesResponse{}, errors.New(response.Warnings[0].Text)
 	}
 	return response, nil
 }
@@ -83,17 +88,36 @@ func renderAppToDisk(runtime Runtime) error {
 	buf.Write([]byte(")"))
 	buf.Write([]byte("\n")) // EOF
 
-	if _, err := run.Cmd(buf.Bytes(), "node"); err != nil {
+	stdout, err := run.Cmd(buf.Bytes(), "node")
+	if err != nil {
 		return err
+	}
+
+	var response srvResponse
+	if err := json.Unmarshal(stdout, &response); err != nil {
+		return err
+	}
+
+	// TODO
+	if len(response.Errors) > 0 {
+		return errors.New(response.Errors[0].Text)
+	} else if len(response.Warnings) > 0 {
+		return errors.New(response.Warnings[0].Text)
 	}
 	return nil
 }
 
 func (r Runtime) Build() {
-	must(copyAssetDirToBuildDir(r.DirConfiguration))
+	if err := copyAssetDirToBuildDir(r.DirConfiguration); err != nil {
+		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
+			err.Error())
+	}
 
 	pages, err := renderPages(r)
-	must(err)
+	if err != nil {
+		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
+			err.Error())
+	}
 
 	for _, each := range pages.Data {
 		if dir := p.Dir(each.DstPath); dir != "." {
@@ -108,5 +132,8 @@ func (r Runtime) Build() {
 		}
 	}
 
-	must(renderAppToDisk(r))
+	if err := renderAppToDisk(r); err != nil {
+		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
+			err.Error())
+	}
 }

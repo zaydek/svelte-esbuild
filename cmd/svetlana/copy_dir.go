@@ -1,7 +1,7 @@
 package svetlana
 
 import (
-	"io"
+	"io/ioutil"
 	"os"
 	p "path"
 	"path/filepath"
@@ -48,19 +48,28 @@ func copyAssetDirToBuildDir(config DirectoryConfiguration) error {
 				return err
 			}
 		}
-		src, err := os.Open(each.src)
+
+		// src, err := os.Open(each.src)
+		// if err != nil {
+		// 	return err
+		// }
+		// dst, err := os.Create(each.dst)
+		// if err != nil {
+		// 	return err
+		// }
+		// if _, err := io.Copy(dst, src); err != nil {
+		// 	return err
+		// }
+		// src.Close()
+		// dst.Close()
+
+		bstr, err := ioutil.ReadFile(each.src)
 		if err != nil {
 			return err
 		}
-		dst, err := os.Create(each.dst)
-		if err != nil {
+		if err := ioutil.WriteFile(each.dst, bstr, perm.File); err != nil {
 			return err
 		}
-		if _, err := io.Copy(dst, src); err != nil {
-			return err
-		}
-		src.Close()
-		dst.Close()
 	}
 	return nil
 }
