@@ -6,31 +6,19 @@ import (
 )
 
 func Run() {
-	// Cover []string{"create-svetlana-app"} case:
+	var cmd Command
+
 	if len(os.Args) == 1 {
 		fmt.Println(usage)
 		os.Exit(0)
 	}
-
-	var cmd Command
-	switch os.Args[1] {
-	case "version":
-		fallthrough
-	case "--version":
-		fallthrough
-	case "-v":
+	if arg := os.Args[1]; arg == "version" || arg == "--version" || arg == "-v" {
 		fmt.Println(os.Getenv("SVETLANA_VERSION"))
 		os.Exit(0)
-	case "help":
-		fallthrough
-	case "--help":
-		fallthrough
-	case "usage":
-		fallthrough
-	case "--usage":
+	} else if arg == "help" || arg == "--help" || arg == "usage" || arg == "--usage" {
 		fmt.Println(usage)
 		os.Exit(0)
-	default:
+	} else {
 		cmd = parseArguments(os.Args[1:]...)
 	}
 	cmd.CreateApp()
