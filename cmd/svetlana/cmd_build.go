@@ -1,16 +1,17 @@
 package svetlana
 
 import (
+	"bytes"
 	"encoding/json"
 	"errors"
 	"io/ioutil"
 	"os"
-	"os/exec"
 	p "path"
 
 	"github.com/evanw/esbuild/pkg/api"
 	"github.com/zaydek/svetlana/pkg/loggers"
 	"github.com/zaydek/svetlana/pkg/perm"
+	"github.com/zaydek/svetlana/pkg/run"
 )
 
 // renderedPagesMap describes a map of rendered pages.
@@ -25,7 +26,6 @@ type pagesResponse struct {
 	Data     renderedPagesMap `json:"data"`
 }
 
-// TODO: Add better support for stdout, stderr.
 func renderPages(runtime Runtime) (pagesResponse, error) {
 	bstr, err := ioutil.ReadFile("scripts/pages.js")
 	if err != nil {
@@ -37,33 +37,21 @@ func renderPages(runtime Runtime) (pagesResponse, error) {
 		return pagesResponse{}, err
 	}
 
-	cmd := exec.Command("node")
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return pagesResponse{}, err
-	}
+	var buf bytes.Buffer
+	buf.Write(bstr)
+	buf.Write([]byte("\n"))
+	buf.Write([]byte("run("))
+	buf.Write(rstr)
+	buf.Write([]byte(")"))
+	buf.Write([]byte("\n")) // EOF
 
-	go func() {
-		defer stdin.Close()
-		stdin.Write(bstr)
-		stdin.Write([]byte("\n"))
-		stdin.Write([]byte("run("))
-		stdin.Write(rstr)
-		stdin.Write([]byte(")"))
-		stdin.Write([]byte("\n")) // EOF
-	}()
-
-	out, err := cmd.CombinedOutput()
+	stdout, err := run.Cmd(buf.Bytes(), "node")
 	if err != nil {
-		// TODO
-		if len(out) > 0 {
-			return pagesResponse{}, errors.New(string(out))
-		}
 		return pagesResponse{}, err
 	}
 
 	var response pagesResponse
-	if err := json.Unmarshal(out, &response); err != nil {
+	if err := json.Unmarshal(stdout, &response); err != nil {
 		return pagesResponse{}, err
 	}
 
@@ -76,7 +64,6 @@ func renderPages(runtime Runtime) (pagesResponse, error) {
 	return response, nil
 }
 
-// TODO: Add better support for stdout, stderr.
 func renderAppToDisk(runtime Runtime) error {
 	bstr, err := ioutil.ReadFile("scripts/app.js")
 	if err != nil {
@@ -88,28 +75,15 @@ func renderAppToDisk(runtime Runtime) error {
 		return err
 	}
 
-	cmd := exec.Command("node")
-	stdin, err := cmd.StdinPipe()
-	if err != nil {
-		return err
-	}
+	var buf bytes.Buffer
+	buf.Write(bstr)
+	buf.Write([]byte("\n"))
+	buf.Write([]byte("run("))
+	buf.Write(rstr)
+	buf.Write([]byte(")"))
+	buf.Write([]byte("\n")) // EOF
 
-	go func() {
-		defer stdin.Close()
-		stdin.Write(bstr)
-		stdin.Write([]byte("\n"))
-		stdin.Write([]byte("run("))
-		stdin.Write(rstr)
-		stdin.Write([]byte(")"))
-		stdin.Write([]byte("\n")) // EOF
-	}()
-
-	out, err := cmd.CombinedOutput()
-	if err != nil {
-		// TODO
-		if len(out) > 0 {
-			return errors.New(string(out))
-		}
+	if _, err := run.Cmd(buf.Bytes(), "node"); err != nil {
 		return err
 	}
 	return nil
