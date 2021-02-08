@@ -77,7 +77,7 @@ func newRuntime() (Runtime, error) {
 		}
 	}
 
-	if runtime.BaseHTML, err = readBaseHTML(runtime.DirConfiguration); err != nil {
+	if runtime.BasePage, err = readBaseHTML(runtime.DirConfiguration); err != nil {
 		return Runtime{}, err
 	}
 

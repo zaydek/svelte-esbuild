@@ -5,7 +5,7 @@ const prettier = require("prettier")
 
 const svelte = require("./svelte-plugin.js")
 
-const userSvetlanaConfig = {}
+const userSvetlanaConfig = { plugins: [] }
 const userPrettierConfig = {}
 
 function name(src) {
@@ -22,7 +22,7 @@ async function renderComponentFromPageBasedRoute(runtime, page_based_route) {
 		},
 		entryPoints: [page_based_route.src_path],
 		format: "cjs",
-		outfile: `${runtime.dir_config.cache_dir}/pages/${name(src)}.esbuild.js`,
+		outfile: `${runtime.dir_config.cache_dir}/pages/${name(page_based_route.src_path)}.esbuild.js`,
 		plugins: [
 			svelte({
 				generate: "ssr",
@@ -40,25 +40,28 @@ async function renderComponentFromPageBasedRoute(runtime, page_based_route) {
 		)
 		process.kill(1)
 	}
-
-	const component = require(`./${runtime.dir_config.cache_dir}/pages/${name(src)}.esbuild.js`).default
+	const component = require(`./${runtime.dir_config.cache_dir}/pages/${name(page_based_route.src_path)}.esbuild.js`)
+		.default
 	return component.render()
 }
 
 // renderPageFromComponent renders a page from a rendered component.
 async function renderPageFromComponent(runtime, component) {
 	// prettier-ignore
-	let page = runtime.base_html
-		.replace("%head%",
-			component.head
-				.replace(/></g, ">\n\t\t<")
-				.replace(/\/>/g, " />"),
-		)
-		.replace("%page%", `
+	const head = component.head
+		.replace(/></g, ">\n\t\t<")
+		.replace(/\/>/g, " />")
+
+	const body = `
 <noscript>You need to enable JavaScript to run this app.</noscript>
 <div id="app">${component.html}</div>
 <script src="/app.js"></script>
-		`)
+`
+
+	// prettier-ignore
+	let page = runtime.base_page
+		.replace("%head%", head)
+		.replace("%page%", body)
 
 	if (userPrettierConfig !== undefined) {
 		page = prettier.format(page, {
@@ -79,18 +82,29 @@ async function run(runtime) {
 
 	const chain = []
 	for (const each of runtime.page_based_router) {
-		const p = new Promise(async () => {
+		const p = new Promise(async (resolve, reject) => {
 			const component = await renderComponentFromPageBasedRoute(runtime, each)
-			return await renderPageFromComponent(runtime, component)
+			const page = await renderPageFromComponent(runtime, component)
+			resolve({ ...each, page })
 		})
 		chain.push(p)
 	}
+
 	const arr = await Promise.all(chain)
 	const map = arr.reduce((acc, each) => {
-		acc[each] = each
+		acc[each.path] = each.page
 		return acc
 	}, {})
-	return map
+
+	console.log(map)
+
+	// console.log(
+	// 	JSON.stringify({
+	// 		data: map,
+	// 		errors: [],
+	// 		warnings: [],
+	// 	}),
+	// )
 }
 
 run({
@@ -100,7 +114,7 @@ run({
 		cacheDir: "__cache__",
 		buildDir: "build",
 	},
-	base_html: `<!DOCTYPE html>
+	base_page: `<!DOCTYPE html>
 <html lang="en">
 	<head>
 		<meta charset="utf-8" />
@@ -112,8 +126,9 @@ run({
 	</body>
 </html>
 `,
+	// prettier-ignore
 	page_based_router: [
-		{ src_path: "pages/index.html", dst_path: "build/index.html", path: "/", component: "PageIndex" },
-		{ src_path: "pages/hello.html", dst_path: "build/hello.html", path: "/hello", component: "PageHello" },
+		{ src_path: "pages/index.svelte", dst_path: "build/index.html", path: "/", component: "PageIndex" },
+		{ src_path: "pages/nested/index.svelte", dst_path: "build/nested/index.html", path: "/nested/", component: "PageIndexIndex" },
 	],
 })

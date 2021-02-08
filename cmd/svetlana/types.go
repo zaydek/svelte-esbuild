@@ -29,6 +29,6 @@ type Runtime struct {
 
 	Command          interface{}            `json:"command"`
 	DirConfiguration DirectoryConfiguration `json:"dir_config"`
-	BaseHTML         string                 `json:"base_html"`
+	BasePage         string                 `json:"base_page"`
 	PageBasedRouter  []PageBasedRoute       `json:"page_based_router"`
 }
