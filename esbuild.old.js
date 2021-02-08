@@ -72,6 +72,7 @@ async function write_page_html(tmpl, src) {
 	let html = tmpl
 		.replace("%head%", rendered.head)
 		.replace("%page%", `
+			<noscript>You need to enable JavaScript to run this app.</noscript>
 			<div id="app">
 				${rendered.html}
 			</div>
