@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"encoding/json"
 	"errors"
+	"fmt"
 	"io/ioutil"
 	"os"
 	p "path"
+	"time"
 
 	"github.com/evanw/esbuild/pkg/api"
 	"github.com/zaydek/svetlana/pkg/loggers"
@@ -108,16 +110,24 @@ func prerenderApp(runtime Runtime) error {
 }
 
 func (r Runtime) Build() {
+	t := time.Now()
+
 	if err := copyAssetDirToBuildDir(r.DirConfiguration); err != nil {
 		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
 			err.Error())
 	}
+
+	fmt.Printf("%0.3fs - copy step\n", time.Since(t).Seconds())
+	t = time.Now()
 
 	pages, err := prerenderPages(r)
 	if err != nil {
 		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
 			err.Error())
 	}
+
+	fmt.Printf("%0.3fs - prerender pages step\n", time.Since(t).Seconds())
+	t = time.Now()
 
 	for _, each := range pages.Data {
 		if dir := p.Dir(each.DstPath); dir != "." {
@@ -132,8 +142,14 @@ func (r Runtime) Build() {
 		}
 	}
 
+	fmt.Printf("%0.3fs - mkdir / write step\n", time.Since(t).Seconds())
+	t = time.Now()
+
 	if err := prerenderApp(r); err != nil {
 		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
 			err.Error())
 	}
+
+	fmt.Printf("%0.3fs - prerender app step\n", time.Since(t).Seconds())
+	t = time.Now()
 }

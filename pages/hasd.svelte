@@ -35,7 +35,7 @@
 </nav>
 
 <h1 on:click={() => alert("hahahaha")}>
-	Hello, world! asdasdasdasd (/)
+	Hello, world! asdasdasd (/)
 	<h1>Hello, world! (/)</h1>
 </h1>
 

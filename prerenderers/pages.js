@@ -5,9 +5,9 @@ const sveltePlugin = require("./prerenderers/svelte-plugin.js")
 
 let configs = {}
 
-// renderAsComponent renders a component from a page-based route.
-async function renderAsComponent(runtime, page_based_route) {
-	const result = await esbuild.build({
+// prerenderComponent prerenders a component from a page-based route.
+const prerenderComponent = service => async (runtime, page_based_route) => {
+	const result = await service.build({
 		bundle: true,
 		define: {
 			__DEV__: process.env.__DEV__,
@@ -15,6 +15,8 @@ async function renderAsComponent(runtime, page_based_route) {
 		},
 		entryPoints: [page_based_route.src_path],
 		format: "cjs",
+		// // https://github.com/evanw/esbuild/issues/777
+		// incremental: true,
 		outfile: `${runtime.dir_config.cache_dir}/${helpers.no_ext(page_based_route.src_path)}.esbuild.js`,
 		plugins: [
 			sveltePlugin({
@@ -37,10 +39,9 @@ async function renderAsComponent(runtime, page_based_route) {
 	return component.render()
 }
 
-// renderAsPage renders a page from a rendered component.
-//
-// prettier-ignore
-async function renderAsPage(runtime, component) {
+// prerenderPage prerenders a page from a rendered component.
+async function prerenderPage(runtime, component) {
+	// prettier-ignore
 	const head = component.head
 		.replace(/></g, ">\n\t\t<")
 		.replace(/\/>/g, " />")
@@ -51,6 +52,7 @@ ${component.html}
 		</div>
 		<script src="/app.js"></script>`
 
+	// prettier-ignore
 	let page = runtime.base_page
 		.replace("%head%", head)
 		.replace("%page%", body)
@@ -64,32 +66,39 @@ ${component.html}
 	return page
 }
 
-// TODO: Change API to service-based architecture and or add support for
-// incremental recompilation.
+// prettier-ignore
 async function run(runtime) {
 	configs = await helpers.load_user_configs()
 
-	const chain = []
-	for (const each of runtime.page_based_router) {
-		const p = new Promise(async resolve => {
-			const component = await renderAsComponent(runtime, each)
-			const page = await renderAsPage(runtime, component)
-			resolve({ ...each, page })
-		})
-		chain.push(p)
+	const service = await esbuild.startService()
+
+	try {
+		const promises = []
+		for (const each of runtime.page_based_router) {
+			const p = new Promise(async resolve => {
+				const component = await prerenderComponent(service)(runtime, each)
+				const page = await prerenderPage(runtime, component)
+				resolve({ ...each, page })
+			})
+			promises.push(p)
+		}
+
+		const arr = await Promise.all(promises)
+		const map = arr.reduce((acc, each) => {
+			acc[each.path] = each
+			return acc
+		}, {})
+
+		console.log(
+			JSON.stringify({
+				data: map,
+				errors: [],
+				warnings: [],
+			}),
+		)
 	}
 
-	const arr = await Promise.all(chain)
-	const map = arr.reduce((acc, each) => {
-		acc[each.path] = each
-		return acc
-	}, {})
-
-	console.log(
-		JSON.stringify({
-			data: map,
-			errors: [],
-			warnings: [],
-		}),
-	)
+	finally {
+		service.stop()
+	}
 }

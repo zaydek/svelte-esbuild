@@ -1,18 +1,22 @@
 import { writable } from "svelte/store"
 
-function createStore() {
-	const path = typeof window === "undefined" ? "/" : window.location.pathname
+function canon(path) {
+	if (path.slice(-5) === ".html") {
+		path = path.slice(0, -5)
+	}
+	return path
+}
 
+function createStore() {
 	const store = writable({
 		key: Date.now(),
-		path,
+		path: typeof window === "undefined" ? "/" : canon(window.location.pathname),
 	})
-
 	if (typeof window !== "undefined") {
 		window.addEventListener("popstate", () => {
 			store.set({
 				key: Date.now(),
-				path: window.location.pathname,
+				path: canon(window.location.pathname),
 			})
 		})
 	}

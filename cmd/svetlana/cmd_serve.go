@@ -4,6 +4,7 @@ import (
 	"fmt"
 	"net/http"
 	"os"
+	p "path"
 	"time"
 
 	"github.com/zaydek/svetlana/pkg/loggers"
@@ -20,12 +21,13 @@ func (r Runtime) Serve() {
 		loggers.OK(fmt.Sprintf("http://localhost:%s", r.getPort()))
 	}()
 
-	// fs := http.FileServer(http.Dir(r.DirConfiguration.BuildDirectory))
-	// http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
-	// 	if path.Ext(r.URL.Path) == "" {
-	// 		r.URL.Path += ".html"
-	// 	}
-	// 	fs.ServeHTTP(w, r)
-	// })
-	must(http.ListenAndServe(":"+r.getPort(), http.FileServer(http.Dir(r.DirConfiguration.BuildDirectory))))
+	fs := http.FileServer(http.Dir(r.DirConfiguration.BuildDirectory))
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		if p.Ext(r.URL.Path) == "" {
+			r.URL.Path += ".html"
+		}
+		fs.ServeHTTP(w, r)
+	})
+	// must(http.ListenAndServe(":"+r.getPort(), http.FileServer(http.Dir(r.DirConfiguration.BuildDirectory))))
+	must(http.ListenAndServe(":"+r.getPort(), nil))
 }
