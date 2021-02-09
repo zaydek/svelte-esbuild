@@ -46,7 +46,9 @@ async function prerenderPage(runtime, component) {
 
 	const body = `<noscript>You need to enable JavaScript to run this app.</noscript>
 		<div id="app">
-${component.html}
+
+${component.html.trim()}
+
 		</div>
 		<script src="/app.js" type="module"></script>`
 

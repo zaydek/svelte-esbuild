@@ -1,6 +1,8 @@
-import pathStore from "./pathStore.js"
+import pathStore, { removeHTML } from "./pathStore.js"
 
 export default function open(path, scrollTo = [0, 0]) {
+	path = removeHTML(path)
+
 	pathStore.set({
 		key: Date.now(),
 		path,

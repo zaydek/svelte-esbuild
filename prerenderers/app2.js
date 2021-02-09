@@ -5,6 +5,22 @@ const sveltePlugin = require("./svelte-plugin.js")
 
 let configs = {}
 
+// `
+// <Route path="${each.path}">
+// 	{#await import("./${each.src_path}").then(module => module.default) then ${each.component}}
+// 		<${each.component} />
+// 	{/await}
+// </Route>
+// `,
+
+// ${runtime.page_based_router.map(each => `import ${each.component} from "../${each.src_path}"`).join("\n\t")}
+
+// ${runtime.page_based_router
+// 	.map(
+// 		each => `<Route path="${each.path}">
+// 	<${each.component} />
+// </Route>
+
 async function run(runtime) {
 	const t = Date.now()
 
@@ -13,14 +29,14 @@ async function run(runtime) {
 	// __cache__/App.svelte
 	const out1 = `<script>
 	import { Route } from "./router"
-
-	${runtime.page_based_router.map(each => `import ${each.component} from "./${each.src_path}"`).join("\n\t")}
 </script>
 
 ${runtime.page_based_router
 	.map(
 		each => `<Route path="${each.path}">
-	<${each.component} />
+	{#await import("./${each.src_path}").then(module => module.default) then ${each.component}}
+		<${each.component} />
+	{/await}
 </Route>
 `,
 	)
@@ -39,14 +55,15 @@ export default new App({
 
 	const result = await esbuild.build({
 		bundle: true,
-		// define: {
-		// 	__DEV__: process.env.__DEV__,
-		// 	NODE_ENV: process.env.NODE_ENV,
-		// },
+		define: {
+			__DEV__: process.env.__DEV__,
+			NODE_ENV: process.env.NODE_ENV,
+		},
+		// entryPoints: [`app.js`],
 		entryPoints: [`app.js`],
 		format: "esm",
-		// minify: process.env.NODE_ENV === "production",
-		// minify: true,
+		minify: process.env.NODE_ENV === "production",
+		minify: true,
 		// outfile: `${runtime.dir_config.build_dir}/app.js`,
 		outdir: runtime.dir_config.build_dir,
 		plugins: [
@@ -54,7 +71,7 @@ export default new App({
 				generate: "dom",
 				hydratable: true,
 			}),
-			// ...configs.svetlana.plugins,
+			...configs.svetlana.plugins,
 		],
 		splitting: true,
 		// sourcemap: runtime.command.source_map,
@@ -98,17 +115,23 @@ run({
 	},
 	base_page: '\u003c!DOCTYPE html\u003e\n\u003chtml lang="en"\u003e\n\t\u003chead\u003e\n\t\t\u003cmeta charset="utf-8" /\u003e\n\t\t\u003cmeta name="viewport" content="width=device-width, initial-scale=1" /\u003e\n\t\t%head%\n\t\u003c/head\u003e\n\t\u003cbody\u003e\n\t\t%page%\n\t\u003c/body\u003e\n\u003c/html\u003e\n',
 	page_based_router: [
-		{
-			src_path: "pages/index.svelte",
-			dst_path: "build/index.html",
-			path: "/",
-			component: "PageIndex",
-		},
-		{
-			src_path: "pages/nested/index.svelte",
-			dst_path: "build/nested/index.html",
-			path: "/nested/",
-			component: "PageNestedIndex",
-		},
+		{ src_path: "pages/index.svelte", dst_path: "build/nested/index.svelte", path: "/", component: "PageIndex" },
+		{ src_path: "pages/nested/index.svelte", dst_path: "build/nested/index.svelte", path: "/nested/", component: "PageNestedIndex" },
+		{ src_path: "pages/a.svelte", dst_path: "build/a.svelte", path: "/a", component: "PageA" },
+		{ src_path: "pages/b.svelte", dst_path: "build/b.svelte", path: "/b", component: "PageB" },
+		{ src_path: "pages/c.svelte", dst_path: "build/c.svelte", path: "/c", component: "PageC" },
+		{ src_path: "pages/d.svelte", dst_path: "build/d.svelte", path: "/d", component: "PageD" },
+		{ src_path: "pages/e.svelte", dst_path: "build/e.svelte", path: "/e", component: "PageE" },
+		{ src_path: "pages/f.svelte", dst_path: "build/f.svelte", path: "/f", component: "PageF" },
+		{ src_path: "pages/g.svelte", dst_path: "build/g.svelte", path: "/g", component: "PageG" },
+		{ src_path: "pages/h.svelte", dst_path: "build/h.svelte", path: "/h", component: "PageH" },
+		{ src_path: "pages/i.svelte", dst_path: "build/i.svelte", path: "/i", component: "PageI" },
+		{ src_path: "pages/j.svelte", dst_path: "build/j.svelte", path: "/j", component: "PageJ" },
+		{ src_path: "pages/k.svelte", dst_path: "build/k.svelte", path: "/k", component: "PageK" },
+		{ src_path: "pages/l.svelte", dst_path: "build/l.svelte", path: "/l", component: "PageL" },
+		{ src_path: "pages/m.svelte", dst_path: "build/m.svelte", path: "/m", component: "PageM" },
+		{ src_path: "pages/n.svelte", dst_path: "build/n.svelte", path: "/n", component: "PageN" },
+		{ src_path: "pages/o.svelte", dst_path: "build/o.svelte", path: "/o", component: "PageO" },
+		{ src_path: "pages/p.svelte", dst_path: "build/p.svelte", path: "/p", component: "PageP" },
 	],
 })

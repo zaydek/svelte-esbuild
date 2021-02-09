@@ -1,5 +1,5 @@
 <script>
-	import { Link } from "../../router"
+	import { Link } from "../router"
 </script>
 
 <svelte:head>
@@ -28,7 +28,7 @@
 	<Link path="/p">open p</Link><br />
 </nav>
 
-<h1 on:click={() => alert("ohasdasdasdohoh")}>Hello, world! (/nested/)</h1>
+<h1 on:click={() => alert("ohohohohoh")}>Hello, world! (/O)</h1>
 
 <div>Hello, world!</div>
 <div>Hello, world!</div>

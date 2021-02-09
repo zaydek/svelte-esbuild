@@ -1,4 +1,6 @@
 <script>
+	// FIXME: https://github.com/sveltejs/svelte/issues/5969
+
 	import open from "./open.js"
 
 	export let path = ""
@@ -8,7 +10,6 @@
 	$: locallyScoped = !path.includes("://")
 </script>
 
-<!-- FIXME: https://github.com/sveltejs/svelte/issues/5969 -->
 <a
 	href={path}
 	target={locallyScoped ? undefined : "_blank"}
