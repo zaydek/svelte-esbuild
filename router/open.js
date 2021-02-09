@@ -1,10 +1,7 @@
-import store_path from "./store_path.js"
+import pathStore from "./pathStore.js"
 
 export default function open(path, { scrollX, scrollY } = { scrollX: 0, scrollY: 0 }) {
-	scrollX = scrollX || 0
-	scrollY = scrollY || 0
-
-	store_path.set(path)
+	pathStore.set(path)
 
 	// Dedupe pushState:
 	if (window.location.pathname === path) {

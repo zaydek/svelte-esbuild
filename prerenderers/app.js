@@ -1,7 +1,7 @@
 const esbuild = require("esbuild")
 const fs = require("fs/promises")
-const helpers = require("./scripts/helpers")
-const sveltePlugin = require("./scripts/svelte-plugin.js")
+const helpers = require("./prerenderers/helpers.js")
+const sveltePlugin = require("./prerenderers/svelte-plugin.js")
 
 let configs = {}
 

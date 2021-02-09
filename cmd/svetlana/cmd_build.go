@@ -31,8 +31,8 @@ type srvPagesResponse struct {
 	Data     pages         `json:"data"`
 }
 
-func renderPages(runtime Runtime) (srvPagesResponse, error) {
-	bstr, err := ioutil.ReadFile("scripts/pages.js")
+func prerenderPages(runtime Runtime) (srvPagesResponse, error) {
+	bstr, err := ioutil.ReadFile("prerenderers/pages.js")
 	if err != nil {
 		return srvPagesResponse{}, err
 	}
@@ -69,8 +69,8 @@ func renderPages(runtime Runtime) (srvPagesResponse, error) {
 	return response, nil
 }
 
-func renderAppToDisk(runtime Runtime) error {
-	bstr, err := ioutil.ReadFile("scripts/app.js")
+func prerenderApp(runtime Runtime) error {
+	bstr, err := ioutil.ReadFile("prerenderers/app.js")
 	if err != nil {
 		return err
 	}
@@ -113,7 +113,7 @@ func (r Runtime) Build() {
 			err.Error())
 	}
 
-	pages, err := renderPages(r)
+	pages, err := prerenderPages(r)
 	if err != nil {
 		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
 			err.Error())
@@ -132,7 +132,7 @@ func (r Runtime) Build() {
 		}
 	}
 
-	if err := renderAppToDisk(r); err != nil {
+	if err := prerenderApp(r); err != nil {
 		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
 			err.Error())
 	}
