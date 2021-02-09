@@ -2,7 +2,7 @@ package run
 
 import (
 	"bytes"
-	"fmt"
+	"errors"
 	"os/exec"
 )
 
@@ -27,7 +27,8 @@ func Cmd(stdin []byte, arguments ...string) (stdout []byte, err error) {
 	}
 
 	if err := cmd.Run(); stderr_.Len() > 0 {
-		return nil, fmt.Errorf("stderr: %s", stderr_.String())
+		// return nil, fmt.Errorf("stderr: %s", stderr_.String())
+		return nil, errors.New(stderr_.String())
 	} else if err != nil {
 		return nil, err
 	}

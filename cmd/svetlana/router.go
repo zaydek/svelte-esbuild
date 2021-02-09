@@ -25,6 +25,8 @@ func pathSyntax(basename string) string {
 }
 
 // componentSyntax returns the component syntax for a path.
+//
+// TODO: Edge cases: -- (two or more) and spaces.
 func componentSyntax(basename string) string {
 	var str string
 

@@ -15,8 +15,6 @@ const prerenderComponent = service => async (runtime, page_based_route) => {
 		},
 		entryPoints: [page_based_route.src_path],
 		format: "cjs",
-		// // https://github.com/evanw/esbuild/issues/777
-		// incremental: true,
 		outfile: `${runtime.dir_config.cache_dir}/${helpers.no_ext(page_based_route.src_path)}.esbuild.js`,
 		plugins: [
 			sveltePlugin({
@@ -57,12 +55,12 @@ ${component.html}
 		.replace("%head%", head)
 		.replace("%page%", body)
 
-	if (runtime.command.prettier) {
-		page = prettier.format(page, {
-			...configs.prettier,
-			parser: "html",
-		})
-	}
+	// if (runtime.command.prettier) {
+	// 	page = prettier.format(page, {
+	// 		...configs.prettier,
+	// 		parser: "html",
+	// 	})
+	// }
 	return page
 }
 

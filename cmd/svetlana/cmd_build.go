@@ -83,6 +83,13 @@ func prerenderApp(runtime Runtime) error {
 	}
 
 	var buf bytes.Buffer
+	os.Stdout.Write(bstr)
+	os.Stdout.Write([]byte("\n"))
+	os.Stdout.Write([]byte("run("))
+	os.Stdout.Write(rstr)
+	os.Stdout.Write([]byte(")"))
+	os.Stdout.Write([]byte("\n")) // EOF
+
 	buf.Write(bstr)
 	buf.Write([]byte("\n"))
 	buf.Write([]byte("run("))
@@ -90,10 +97,14 @@ func prerenderApp(runtime Runtime) error {
 	buf.Write([]byte(")"))
 	buf.Write([]byte("\n")) // EOF
 
+	t := time.Now()
+
 	stdout, err := run.Cmd(buf.Bytes(), "node")
 	if err != nil {
 		return err
 	}
+
+	fmt.Printf("%0.3fs - node step\n", time.Since(t).Seconds())
 
 	var response srvResponse
 	if err := json.Unmarshal(stdout, &response); err != nil {

@@ -27,11 +27,11 @@ module.exports = (options = {}) => ({
 			const filename = path.relative(process.cwd(), args.path)
 
 			try {
-				let { js, warnings } = svelte.compile(source, {
+				const { js, warnings } = svelte.compile(source, {
 					...options,
 					filename,
 				})
-				let contents = js.code + `//# sourceMappingURL=` + js.map.toUrl()
+				const contents = js.code + `//# sourceMappingURL=` + js.map.toUrl()
 				return { contents, warnings: warnings.map(convertMessage) }
 			} catch (e) {
 				return { errors: [convertMessage(e)] }
