@@ -48,7 +48,7 @@ async function prerenderPage(runtime, component) {
 		<div id="app">
 ${component.html}
 		</div>
-		<script src="/app.js"></script>`
+		<script src="/app.js" type="module"></script>`
 
 	// prettier-ignore
 	let page = runtime.base_page

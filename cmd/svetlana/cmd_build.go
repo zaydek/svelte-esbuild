@@ -156,10 +156,10 @@ func (r Runtime) Build() {
 	fmt.Printf("%0.3fs - mkdir / write step\n", time.Since(t).Seconds())
 	t = time.Now()
 
-	if err := prerenderApp(r); err != nil {
-		loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
-			err.Error())
-	}
+	// if err := prerenderApp(r); err != nil {
+	// 	loggers.ErrorAndEnd("An unexpected error occurred.\n\n" +
+	// 		err.Error())
+	// }
 
 	fmt.Printf("%0.3fs - prerender app step\n", time.Since(t).Seconds())
 	t = time.Now()
