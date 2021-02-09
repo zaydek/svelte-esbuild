@@ -1,13 +1,16 @@
 import pathStore from "./pathStore.js"
 
-export default function open(path, { scrollX, scrollY } = { scrollX: 0, scrollY: 0 }) {
-	pathStore.set(path)
+export default function open(path, scrollTo = [0, 0]) {
+	pathStore.set({
+		key: Date.now(),
+		path,
+	})
 
 	// Dedupe pushState:
+	let route = () => window.history.pushState({}, "", path)
 	if (window.location.pathname === path) {
-		// No-op
-		return
+		route = () => window.history.replaceState({}, "", path)
 	}
-	window.history.pushState({}, "", path)
-	window.scrollTo(scrollX, scrollY)
+	route()
+	window.scrollTo(scrollTo[0], scrollTo[1])
 }

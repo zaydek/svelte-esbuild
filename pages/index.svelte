@@ -1,5 +1,15 @@
 <script>
 	import { Link } from "../router"
+	import { onMount } from "svelte"
+
+	let counter = 0
+
+	onMount(() => {
+		const id = setInterval(() => {
+			counter++
+		}, 1e3)
+		return () => clearInterval(id)
+	})
 </script>
 
 <svelte:head>
@@ -16,6 +26,108 @@
 	Hello, world! (/)
 	<h1>Hello, world! (/)</h1>
 </h1>
+
+<div>{counter}</div>
+
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
+<div>Hello, world!</div>
 
 <style>
 	h1 {

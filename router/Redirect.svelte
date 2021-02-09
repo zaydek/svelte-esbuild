@@ -2,8 +2,7 @@
 	import open from "./open.js"
 
 	export let path = ""
-	export let scrollX = 0
-	export let scrollY = 0
+	export let scrollTo = [0, 0]
 
-	open(path, { scrollX, scrollY })
+	open(path, scrollTo)
 </script>

@@ -11,6 +11,8 @@ would be to use a <Router> where every <Route> is registered using
 router needs to think whereas <Route> is otherwise idempotent. The disadvantage
 of this approach is that we need a <Router> component which is slightly
 annoying. -->
-{#if $pathStore === path}
-	<slot />
+{#if $pathStore.path === path}
+	{#each [$pathStore] as each (each.key)}
+		<slot />
+	{/each}
 {/if}
